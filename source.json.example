@@ -1,0 +1,31 @@
+{
+    // 긁어올 사이트의 소스
+    "source": [
+        {
+            // 구분을 위한 이름
+            "name": "SKKU CSE Notice",
+            // 긁어올 URL
+            "url": "https://cse.skku.edu/cse/notice.do?mode=list&&articleLimit=10&article.offset=10",
+            // 긁어올 HTML의 selector
+            // parent: 공지사항 리스트를 감싸고 있는 태그의 selector
+            // child: 리스트 아이템의 태그
+            // crawl_title: 제목으로 긁어올 태그의 selector(list에 상대적인 selector)
+            // crawl_content: (선택)추가로 긁어올 태그의 selector(list에 상대적인 selector)
+            // crawl_link: (선택)알림 클릭 시 이동할 URL의 a 태그의 selector
+            "selector": {
+                "parent": "#jwxe_main_content > div > div > div.board-name-list.board-wrap > ul",
+                "child": "li",
+                "crawl_title": "dl > dt > a",
+                "crawl_content": "dd > ul > li:nth-child(3)",
+                "crawl_link": "dl > dt > a"
+            },
+            // 긁어온 HTML을 파싱할 때 사용할 옵션
+            // render: true로 설정하면, HTML 및 JS를 렌더링한 후에 긁어옴
+            // wait: 렌더링 후 긁어오기 전 대기할 시간 (ms)
+            "render_options": {
+                "render": false,
+                "wait": 1000
+            }
+        }
+    ]
+}

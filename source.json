@@ -1,0 +1,19 @@
+{
+    "source": [
+        {
+            "name": "SKKU CSE Notice",
+            "url": "https://cse.skku.edu/cse/notice.do?mode=list&&articleLimit=10&article.offset=10",
+            "selector": {
+                "parent": "#jwxe_main_content > div > div > div.board-name-list.board-wrap > ul",
+                "child": "li",
+                "crawl_title": "dl > dt > a",
+                "crawl_content": "dd > ul > li:nth-child(3)",
+                "crawl_link": "dl > dt > a"
+            },
+            "render_options": {
+                "render": false,
+                "wait": 1000
+            }
+        }
+    ]
+}
