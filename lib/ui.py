@@ -17,6 +17,12 @@ iconify_onclose_checkbox_var = None
 stray_checkbox_var = None
 stray_checkbox = None
 
+def deiconify():
+    root.deiconify()
+    root.lift()
+    root.focus_force()
+
+
 def set_start_onboot(enable: bool):
     key = winreg.OpenKey(
         winreg.HKEY_CURRENT_USER,
@@ -65,6 +71,7 @@ def initialize():
 
     root = Tk()
     root.title(APP_NAME)
+    root.iconbitmap('public/icon.ico')
     root.geometry('300x400')
     root.attributes('-fullscreen', False)
     root.resizable(False, False)
