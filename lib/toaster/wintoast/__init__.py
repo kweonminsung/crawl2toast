@@ -12,8 +12,6 @@ import logging
 import threading
 from os import path
 from time import sleep
-# from pkg_resources import Requirement
-# from pkg_resources import resource_filename
 
 # 3rd party modules
 from win32api import GetModuleHandle
@@ -87,18 +85,6 @@ class ToastNotifier(object):
         UpdateWindow(self.hwnd)
 
         # icon
-        # if icon_path is not None:
-        #     icon_path = path.realpath(icon_path)
-        # else:
-        #     icon_path =  resource_filename(Requirement.parse("win10toast"), "win10toast/data/python.ico")
-        # icon_flags = LR_LOADFROMFILE | LR_DEFAULTSIZE
-        # try:
-        #     hicon = LoadImage(self.hinst, icon_path,
-        #                       IMAGE_ICON, 0, 0, icon_flags)
-        # except Exception as e:
-        #     logging.error("Some trouble with the icon ({}): {}"
-        #                   .format(icon_path, e))
-        #     hicon = LoadIcon(0, IDI_APPLICATION)
         if icon_path is not None:
             icon_path = path.realpath(icon_path)
             icon_flags = LR_LOADFROMFILE | LR_DEFAULTSIZE
@@ -166,6 +152,5 @@ class ToastNotifier(object):
         Shell_NotifyIcon(NIM_DELETE, nid)
         PostQuitMessage(0)
 
-        # return None
         return 0
 
