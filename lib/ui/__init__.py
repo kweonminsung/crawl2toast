@@ -7,7 +7,6 @@ from lib.ui.error_logs_frame import error_logs_frame
 from lib.constants import APP_NAME, CHECK_UPDATE_URL
 from lib.crawler import crawl
 from lib.settings import get_sources
-from lib.db import create_history
 
 
 def set_delete_window_handler(close: bool):
@@ -73,13 +72,6 @@ def crawl_now_handler():
     sources = get_sources()
 
     if messagebox.askyesno("확인", "지금 긁어오시겠습니까?"):
-        result = crawl()
+        crawl()
 
-        # print(result)
-
-        for source in sources["source"]:
-            url = source["url"]
-
-            for item in result[url]:
-                create_history(url, item["content"])
-
+        

@@ -5,6 +5,9 @@ from selenium.webdriver.chrome.service import Service
 from selenium.common.exceptions import TimeoutException
 from webdriver_manager.chrome import ChromeDriverManager
 from lib.constants import USER_AGENT
+from lib.db import create_history, get_histories
+from lib.settings import get_sources
+from lib.toaster import show_toast, show_compressed_toast 
 
 selenium_driver = None
 
@@ -51,9 +54,7 @@ def get_html_by_request(url: str) -> str:
         raise Exception(f"Failed to retrieve the page. Status code: {response.status_code}")
 
 
-def crawl() -> dict[str, list[dict[str, str | None]]]:
-    from lib.settings import get_sources
-
+def _crawl() -> dict[str, list[dict[str, str | None]]]:
     sources = get_sources()
     
     result = dict()
@@ -92,3 +93,25 @@ def crawl() -> dict[str, list[dict[str, str | None]]]:
         result[url] = url_result
 
     return result
+
+
+def crawl():
+    sources = get_sources()
+    results = _crawl()
+
+    for source in sources["source"]:
+        url = source["url"]
+
+        for result in results[url]:
+            last_history = get_histories(url, 1, 0)
+
+            # Check if the content is already in the history
+            if len(last_history) > 0 and last_history[0]["content"] == result["content"]:
+                continue
+            
+            create_history(url, result["content"])
+
+        if len(results[url]) > 0:
+            show_compressed_toast(source["name"], results[url][0]["content"], len(results[url]) - 1)
+        else:
+            show_toast(source["name"], results[url][0]["content"])
