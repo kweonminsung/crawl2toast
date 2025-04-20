@@ -9,18 +9,23 @@ def initialize():
     from lib.db import get_all_settings
     
     global settings
-    global sources
     
     # Load settings from db
     settings = get_all_settings()
-
     print("Settings loaded successfully.")
 
+    # Load sources from JSON file
+    load_sources()
+    print("Sources loaded successfully.")
+
+
+def load_sources():
+    global sources
+    
     # Load sources from JSON file
     try:
         with open(SOURCES_FILE) as f:
             sources = json.load(f)
-            print("Sources loaded successfully.")
 
             need_renderer = False
             for source in sources['source']:
@@ -36,7 +41,7 @@ def initialize():
         raise Exception("Sources file not found.")
     except json.JSONDecodeError:
         raise Exception("Error decoding JSON from sources file.")
-
+    
 
 def get_settings() -> dict[str, str | bool | datetime]:
     global settings

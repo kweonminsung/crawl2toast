@@ -1,14 +1,13 @@
 from tkinter import *
 from tkinter import ttk, messagebox
 import webbrowser
-from win10toast import ToastNotifier
 from lib.ui.main_frame import main_frame, load_source
 from lib.ui.settings_frame import settings_frame
 from lib.ui.error_logs_frame import error_logs_frame
 from lib.constants import APP_NAME, CHECK_UPDATE_URL
-
-
-toaster = ToastNotifier()
+from lib.crawler import crawl
+from lib.settings import get_sources
+from lib.db import create_history
 
 
 def set_delete_window_handler(close: bool):
@@ -48,6 +47,10 @@ def initialize():
     menu2.add_command(label='소스파일 다시 로드', command=load_source)
     menubar.add_cascade(label='로드', menu=menu2)
 
+    menu3 = Menu(menubar, tearoff=0)
+    menu3.add_command(label='지금 긁어오기', command=crawl_now_handler)
+    menubar.add_cascade(label='크롤링', menu=menu3)
+
     root.config(menu=menubar)
 
     # ----------------------------------------------------------------
@@ -62,3 +65,21 @@ def initialize():
     error_logs_frame(notebook)
 
     root.mainloop()
+
+
+def crawl_now_handler():
+    global root
+
+    sources = get_sources()
+
+    if messagebox.askyesno("확인", "지금 긁어오시겠습니까?"):
+        result = crawl()
+
+        # print(result)
+
+        for source in sources["source"]:
+            url = source["url"]
+
+            for item in result[url]:
+                create_history(url, item["content"])
+

@@ -4,8 +4,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.common.exceptions import TimeoutException
 from webdriver_manager.chrome import ChromeDriverManager
-
-USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"
+from lib.constants import USER_AGENT
 
 selenium_driver = None
 
@@ -31,7 +30,7 @@ def terminate_selenium_driver():
 
 def get_html_by_selenium(url: str, wait: int) -> str:
     global selenium_driver
-    
+
     try:
         selenium_driver.get(url)
     except TimeoutException:
@@ -77,21 +76,15 @@ def crawl() -> dict[str, list[dict[str, str | None]]]:
         parent_element = soup.select_one(selector["parent"])
 
         for child_element in parent_element.find_all(selector["child"], recursive=False):
-            print(child_element)
-            print(child_element.select_one(selector["crawl_title"]).text)
+            # print(child_element.select_one(selector["crawl_title"]).text)
 
-            title = str(child_element.select_one(selector["crawl_title"]).text).strip()
-
-            content = None
-            if selector["crawl_title"] is not None:
-                content = str(child_element.select_one(selector["crawl_content"]).text).strip()
+            content = str(child_element.select_one(selector["crawl_content"]).text).strip()
 
             link = None
             if selector["crawl_link"] is not None:
                 link = str(child_element.select_one(selector["crawl_link"])["href"]).strip()
 
             url_result.append({
-                "title": title,
                 "content": content,
                 "link": link
             })

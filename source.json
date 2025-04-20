@@ -6,8 +6,7 @@
             "selector": {
                 "parent": "#jwxe_main_content > div > div > div.board-name-list.board-wrap > ul",
                 "child": "li",
-                "crawl_title": "dl > dt > a",
-                "crawl_content": "dd > ul > li:nth-child(3)",
+                "crawl_content": "dl > dt > a",
                 "crawl_link": "dl > dt > a"
             },
             "render_options": {

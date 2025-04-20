@@ -2,7 +2,7 @@ from tkinter import *
 from tkinter import ttk
 from lib import db, utils
 from lib.constants import HISTORY_LIMIT
-from lib.settings import get_sources
+from lib.settings import get_sources, load_sources
 
 history_offset = 0
 
@@ -55,9 +55,10 @@ def main_frame(master: ttk.Notebook):
 def load_source():
     global url_listbox
     
+    load_sources()
     sources = get_sources()
 
-    # url_listbox.delete(0, END)
+    url_listbox.delete(0, END)
 
     for source in sources["source"]:
         url_listbox.insert(END, source["url"])
@@ -79,7 +80,7 @@ def url_listbox_click_handler(event):
     history_listbox.delete(0, END)
     for history in histories:
         # history_listbox.insert(END, history)
-        history_listbox.insert(END, f"{utils.timestamp_to_datetime(history['timestamp'])} - {history['title']}")
+        history_listbox.insert(END, f"{utils.timestamp_to_datetime(history['timestamp'])} - {history['content']}")
 
 
 def history_listbox_load_more():
@@ -96,7 +97,7 @@ def history_listbox_load_more():
 
     for i in range(len(append_histories)):
         # history_listbox.insert(END, append_histories[i])
-        history_listbox.insert(END, f"{utils.timestamp_to_datetime(append_histories[i]['timestamp'])} - {append_histories[i]['title']}")
+        history_listbox.insert(END, f"{utils.timestamp_to_datetime(append_histories[i]['timestamp'])} - {append_histories[i]['content']}")
         
 
 def history_listbox_scrollbar_onscroll_handler(*args):

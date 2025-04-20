@@ -9,14 +9,12 @@
             // 긁어올 HTML의 selector
             // parent: 공지사항 리스트를 감싸고 있는 태그의 selector
             // child: 리스트 아이템의 태그
-            // crawl_title: 제목으로 긁어올 태그의 selector(list에 상대적인 selector)
-            // crawl_content: (선택)추가로 긁어올 태그의 selector(list에 상대적인 selector)
+            // crawl_content: 긁어올 태그의 selector(list에 상대적인 selector)
             // crawl_link: (선택)알림 클릭 시 이동할 URL의 a 태그의 selector
             "selector": {
                 "parent": "#jwxe_main_content > div > div > div.board-name-list.board-wrap > ul",
                 "child": "li",
-                "crawl_title": "dl > dt > a",
-                "crawl_content": "dd > ul > li:nth-child(3)",
+                "crawl_content": "dl > dt > a",
                 "crawl_link": "dl > dt > a"
             },
             // 긁어온 HTML을 파싱할 때 사용할 옵션

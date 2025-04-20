@@ -32,7 +32,7 @@ def initialize():
         CREATE TABLE IF NOT EXISTS histories (
             id INTEGER PRIMARY KEY,
             url TEXT NOT NULL,
-            title TEXT NOT NULL,
+            content TEXT NOT NULL,
             timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
         )
     ''')
@@ -78,6 +78,14 @@ def set_setting(key: SettingKey, value: str) -> None:
     conn.commit()
 
 
+def create_history(url: str, content: str) -> None:
+    global conn
+
+    cursor = conn.cursor()
+    cursor.execute(f"INSERT INTO histories (url, content) VALUES ('{url}', '{content}')")
+    conn.commit()
+
+
 def get_histories(url: str, limit: int, offset: int) -> list[dict[str, str | None]]:
     global conn
 
@@ -90,7 +98,7 @@ def get_histories(url: str, limit: int, offset: int) -> list[dict[str, str | Non
         result.append({
             "id": row[0],
             "url": row[1],
-            "title": row[2],
+            "content": row[2],
             "timestamp": row[3]
         })
 
