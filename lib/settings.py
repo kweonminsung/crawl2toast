@@ -1,7 +1,6 @@
 import json
 from datetime import datetime
-
-SOURCES_FILE = 'source.json'
+from lib.constants import SOURCES_FILE
 
 settings = None
 sources = None
