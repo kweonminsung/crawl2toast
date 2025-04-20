@@ -1,15 +1,18 @@
 from tkinter import *
 from tkinter import ttk, messagebox
 from win10toast import ToastNotifier
-from lib import crawler, stray, db
+from lib import crawler, stray, db, utils
 from lib.enums import SettingKey
 import winreg
 import os
 import sys
 
 APP_NAME = "crawl2toast"
+HISTORY_LIMIT = 10
 
 toaster = ToastNotifier()
+
+history_offset = 0
 
 root = None
 log_listbox = None
@@ -17,11 +20,33 @@ start_onboot_checkbox_var = None
 iconify_onclose_checkbox_var = None
 stray_checkbox_var = None
 stray_checkbox = None
+url_listbox = None
+history_listbox = None
 
 def deiconify():
     root.deiconify()
     root.lift()
     root.focus_force()
+
+
+def url_listbox_click_handler(event):
+    global history_offset
+
+    if url_listbox is None or history_listbox is None:
+        raise Exception("url_listbox is not initialized.")
+    
+    history_offset = 0
+
+    selected_index = url_listbox.curselection()
+    if not selected_index:
+        return
+    selected_url = selected_index[0]
+
+    histories = db.get_histories(url_listbox.get(selected_url), HISTORY_LIMIT, history_offset)
+
+    history_listbox.delete(0, END)
+    for history in histories:
+        history_listbox.insert(END, f"{utils.timestamp_to_datetime(history['timestamp'])} - {history['title']}")
 
 
 def set_start_onboot(enable: bool):
@@ -87,13 +112,15 @@ def initialize():
     global iconify_onclose_checkbox_var
     global stray_checkbox_var
     global stray_checkbox
+    global url_listbox
+    global history_listbox
 
     settings = get_settings()
 
     root = Tk()
     root.title(APP_NAME)
     root.iconbitmap('public/icon.ico')
-    root.geometry('300x400')
+    root.geometry('400x600')
     root.attributes('-fullscreen', False)
     root.resizable(False, False)
 
@@ -103,23 +130,52 @@ def initialize():
     # ----------------------------------------------------------------
 
     main_frame = Frame(notebook)
-    notebook.add(main_frame, text='메인')
+    notebook.add(main_frame, text='기록')
 
-    run_button = Button(main_frame, text="실행")
-    run_button.pack(pady=20)
 
-    stop_button = Button(main_frame, text="중지")
-    stop_button.pack(pady=20)
+    url_frame = Frame(main_frame)
+    url_frame.pack(fill=X)
 
+    url_label = Label(url_frame, text="URL", anchor='w')
+    url_label.pack(fill=X, padx=0.5)
+
+    url_listbox_scrollbar = ttk.Scrollbar(url_frame)
+    url_listbox_scrollbar.pack(side=RIGHT)
+    url_listbox = Listbox(url_frame, height=5, yscrollcommand=url_listbox_scrollbar.set)
+    url_listbox.pack(fill=X)
+
+    url_listbox.bind('<<ListboxSelect>>', url_listbox_click_handler)
+    url_listbox.insert(0, "https://example.com")
+    url_listbox.insert(1, "https://example.com")    
+    url_listbox.insert(2, "https://example.com")
+    url_listbox.insert(3, "https://example.com")
     
-    toast_button = Button(root, text="Toast", command=test)
-    toast_button.pack(pady=20)
+    sp1 = ttk.Separator(main_frame, orient='horizontal')
+    sp1.pack(fill=X)
+
+    history_frame = Frame(main_frame)
+    history_frame.pack(fill=BOTH, expand=True)
+
+    history_label = Label(history_frame, text="기록", anchor='w')
+    history_label.pack(fill=BOTH, padx=3)
+
+    history_listbox_scrollbar = ttk.Scrollbar(history_frame)
+    history_listbox_scrollbar.pack(side=RIGHT)
+    history_listbox = Listbox(history_frame, yscrollcommand=history_listbox_scrollbar.set)
+    history_listbox.pack(fill=BOTH, expand=True)
+
 
 
     # ----------------------------------------------------------------
     
     settings_frame = Frame(notebook)
     notebook.add(settings_frame, text='설정')
+
+    run_button = Button(settings_frame, text="실행")
+    run_button.pack(pady=20)
+
+    stop_button = Button(settings_frame, text="중지")
+    stop_button.pack(pady=20)
 
     start_onboot_checkbox_var = BooleanVar(value=settings[SettingKey.START_ONBOOT.value])
     start_onboot_checkbox = Checkbutton(settings_frame, text="윈도우 시작 시 실행", variable=start_onboot_checkbox_var, command=start_onboot_checkbox_click_handler)
@@ -134,12 +190,15 @@ def initialize():
     stray_checkbox.config(state= "disabled" if settings[SettingKey.ICONIFY_ONCLOSE.value] else "normal")
     stray_checkbox.pack(pady=20)
 
-    reset_history_button = Button(settings_frame, text="기록 초기화", command=lambda: messagebox.showinfo("로그 초기화", "로그가 초기화되었습니다."))
+    reset_history_button = Button(settings_frame, text="기록 초기화", command=lambda: messagebox.showinfo("기록 초기화", "기록이 초기화되었습니다."))
     reset_history_button.pack(pady=20)
+
+    reset_error_log_button = Button(settings_frame, text="실패 로그 초기화", command=lambda: messagebox.showinfo("실패 로그 초기화", "실패 로그가 초기화되었습니다."))
+    reset_error_log_button.pack(pady=20)
 
     # ----------------------------------------------------------------
     logs_frame = Frame(notebook)
-    notebook.add(logs_frame, text='로그')
+    notebook.add(logs_frame, text='실패 로그')
 
     log_listbox = Listbox(logs_frame)
     log_listbox.pack(fill=BOTH, expand=True)

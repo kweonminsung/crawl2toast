@@ -29,6 +29,15 @@ def initialize():
     ])
 
     cursor.execute('''
+        CREATE TABLE IF NOT EXISTS histories (
+            id INTEGER PRIMARY KEY,
+            url TEXT NOT NULL,
+            title TEXT NOT NULL,
+            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+        )
+    ''')
+
+    cursor.execute('''
         CREATE TABLE IF NOT EXISTS error_logs (
             id INTEGER PRIMARY KEY,
             url TEXT NOT NULL,
@@ -67,6 +76,25 @@ def set_setting(key: SettingKey, value: str) -> None:
     cursor = conn.cursor()
     cursor.execute(f"INSERT OR REPLACE INTO settings (key, value) VALUES ('{key.value}', '{value}')")
     conn.commit()
+
+
+def get_histories(url: str, limit: int, offset: int) -> list[dict[str, str | None]]:
+    global conn
+
+    cursor = conn.cursor()
+    cursor.execute(f"SELECT * FROM histories WHERE url = '{url}' ORDER BY timestamp DESC LIMIT {limit} OFFSET {offset}")
+    rows = cursor.fetchall()
+
+    result = []
+    for row in rows:
+        result.append({
+            "id": row[0],
+            "url": row[1],
+            "title": row[2],
+            "timestamp": row[3]
+        })
+
+    return result
 
 
 def get_error_logs(limit: int, offset: int) -> list[dict[str, str | None]]:
