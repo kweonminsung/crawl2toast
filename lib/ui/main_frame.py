@@ -2,6 +2,7 @@ from tkinter import *
 from tkinter import ttk
 from lib import db, utils
 from lib.constants import HISTORY_LIMIT
+from lib.settings import get_sources
 
 history_offset = 0
 
@@ -27,18 +28,8 @@ def main_frame(master: ttk.Notebook):
     url_listbox_scrollbar.pack(side=RIGHT, fill=Y)
     url_listbox = Listbox(url_frame, height=5, yscrollcommand=url_listbox_scrollbar.set)
     url_listbox.pack(fill=X)
-
     url_listbox.bind('<<ListboxSelect>>', url_listbox_click_handler)
     url_listbox.insert(0, "https://example.com")
-    url_listbox.insert(1, "https://example.com")    
-    url_listbox.insert(2, "https://example.com")
-    url_listbox.insert(3, "https://example.com")
-    url_listbox.insert(4, "https://example.com")
-    url_listbox.insert(5, "https://example.com")
-    url_listbox.insert(6, "https://example.com")
-    url_listbox.insert(7, "https://example.com")
-    url_listbox.insert(8, "https://example.com")
-    url_listbox.insert(9, "https://example.com")
     
 
     sp1 = ttk.Separator(main_frame, orient='horizontal')
@@ -57,6 +48,19 @@ def main_frame(master: ttk.Notebook):
     history_listbox = Listbox(history_frame, yscrollcommand=history_listbox_scrollbar.set)
     history_listbox.bind("<MouseWheel>", history_listbox_onscroll_handler)
     history_listbox.pack(fill=BOTH, expand=True)
+
+    load_source()
+
+
+def load_source():
+    global url_listbox
+    
+    sources = get_sources()
+
+    # url_listbox.delete(0, END)
+
+    for source in sources["source"]:
+        url_listbox.insert(END, source["url"])
 
 
 def url_listbox_click_handler(event):

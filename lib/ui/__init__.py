@@ -1,10 +1,11 @@
 from tkinter import *
-from tkinter import ttk
+from tkinter import ttk, messagebox
+import webbrowser
 from win10toast import ToastNotifier
-from lib.ui.main_frame import main_frame
+from lib.ui.main_frame import main_frame, load_source
 from lib.ui.settings_frame import settings_frame
 from lib.ui.error_logs_frame import error_logs_frame
-from lib.constants import APP_NAME
+from lib.constants import APP_NAME, CHECK_UPDATE_URL
 
 
 toaster = ToastNotifier()
@@ -33,10 +34,26 @@ def initialize():
     root.attributes('-fullscreen', False)
     root.resizable(False, False)
 
-    notebook = ttk.Notebook(root)
-    notebook.pack(expand=True, fill=BOTH)
+    # ----------------------------------------------------------------
+
+    menubar = Menu(root)
+
+    menu1 = Menu(menubar, tearoff=0)
+    menu1.add_command(label='도움말', command=lambda: messagebox.showinfo(APP_NAME, "추후 업데이트 예정입니다."))
+    menu1.add_command(label='업데이트 확인', command=lambda: webbrowser.open(CHECK_UPDATE_URL))
+    menu1.add_command(label='종료', command=root.quit)
+    menubar.add_cascade(label='파일', menu=menu1)
+
+    menu2 = Menu(menubar, tearoff=0)
+    menu2.add_command(label='소스파일 다시 로드', command=load_source)
+    menubar.add_cascade(label='로드', menu=menu2)
+
+    root.config(menu=menubar)
 
     # ----------------------------------------------------------------
+
+    notebook = ttk.Notebook(root)
+    notebook.pack(expand=True, fill=BOTH)
 
     main_frame(notebook)
 
