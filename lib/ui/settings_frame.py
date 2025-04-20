@@ -7,10 +7,10 @@ import winreg
 import os
 import sys
 
-start_onboot_checkbox_var = None
-iconify_onclose_checkbox_var = None
-stray_checkbox_var = None
-stray_checkbox = None
+start_onboot_checkbox_var: BooleanVar | None = None
+iconify_onclose_checkbox_var: BooleanVar | None = None
+stray_checkbox_var: BooleanVar | None = None
+stray_checkbox: Checkbutton | None = None
 
 def settings_frame(master: ttk.Notebook):
     from lib.settings import get_settings

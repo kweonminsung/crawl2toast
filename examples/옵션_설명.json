@@ -17,12 +17,16 @@
                 "crawl_content": "dl > dt > a",
                 "crawl_link": "dl > dt > a"
             },
-            // 긁어온 HTML을 파싱할 때 사용할 옵션
-            // render: true로 설정하면, HTML 및 JS를 렌더링한 후에 긁어옴
-            // wait: 렌더링 후 긁어오기 전 대기할 시간 (ms)
-            "render_options": {
+            // 기타 옵션
+            // disable_history: true로 설정 시 크롤링 기록을 끔(기본값: false)
+            // disable_last_history_check: true로 설정 시 마지막 기록과 관련 없이 모두 긁어옴(기본값: false)
+            // render: true로 설정 시 HTML 및 JS를 렌더링한 후에 긁어옴(기본값: false)
+            // render_wait: 렌더링 후 긁어오기 전 대기할 시간 (단위: ms, 기본값: 1000)
+            "options": {
+                "disable_history": false,
+                "disable_last_history_check": false,
                 "render": false,
-                "wait": 1000
+                "render_wait": 1000
             }
         }
     ]

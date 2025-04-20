@@ -1,17 +1,19 @@
 {
     "source": [
         {
-            "name": "SKKU CSE Notice",
-            "url": "https://cse.skku.edu/cse/notice.do?mode=list&&articleLimit=10&article.offset=10",
+            "name": "나무위키 실시간 검색어",
+            "url": "https://namu.wiki/w/%EB%82%98%EB%AC%B4%EC%9C%84%ED%82%A4:%EB%8C%80%EB%AC%B8",
             "selector": {
-                "parent": "#jwxe_main_content > div > div > div.board-name-list.board-wrap > ul",
+                "parent": "#app > div.SKx2y5Fn.Wmxy5vAW > div.SBRMLtci.QaSXC569 > div > div.lyqAl8Fe.fwSychkR > div._5m3ZW-J6.XHst3\\+Mq.ufxwWFCg > div > ul",
                 "child": "li",
-                "crawl_content": "dl > dt > a",
-                "crawl_link": "dl > dt > a"
+                "crawl_content": "a > span",
+                "crawl_link": "a"
             },
-            "render_options": {
-                "render": false,
-                "wait": 1000
+            "options": {
+                "disable_history": false,
+                "disable_last_history_check": false,
+                "render": true,
+                "render_wait": 100
             }
         }
     ]

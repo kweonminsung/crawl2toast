@@ -1,8 +1,9 @@
 import sqlite3
+from sqlite3 import Connection
 from datetime import datetime
 from lib.enums import SettingKey
 
-conn = None
+conn: Connection | None = None
 
 def initialize():
     global conn

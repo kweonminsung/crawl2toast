@@ -9,7 +9,7 @@ from lib.db import create_history, get_histories
 from lib.settings import get_sources
 from lib.toaster import show_toast, show_compressed_toast 
 
-selenium_driver = None
+selenium_driver: webdriver.Chrome | None = None
 
 def initialize_selenium_driver():
     global selenium_driver
@@ -18,7 +18,12 @@ def initialize_selenium_driver():
     options.add_argument('--headless')
     options.add_argument('--no-sandbox')
     options.add_argument('--disable-dev-shm-usage')
+    options.add_argument('--disable-extensions')
+    options.add_argument('--disable-usb-keyboard-detect')
+    options.add_argument('--ignore-certificate-errors')
     options.add_argument(f"user-agent={USER_AGENT}")
+    
+    options.add_experimental_option('excludeSwitches', ['enable-logging'])
 
     selenium_driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
@@ -59,19 +64,18 @@ def _crawl() -> dict[str, list[dict[str, str | None]]]:
     
     result = dict()
 
-    for source in sources["source"]:
+    for _url, _source in sources.items():
         url_result = list()
 
-        url = source["url"]
-        selector = source["selector"]
+        selector = _source["selector"]
 
         html = None
 
-        if source["render_options"]["render"]:
-            wait = source["render_options"]["wait"]
-            html = get_html_by_selenium(url, wait)
+        if _source["options"]["render"]:
+            wait = _source["options"]["render_wait"]
+            html = get_html_by_selenium(_url, wait)
         else:
-            html = get_html_by_request(url)
+            html = get_html_by_request(_url)
             
         soup = BeautifulSoup(html, 'html.parser')
         parent_element = soup.select_one(selector["parent"])
@@ -90,7 +94,7 @@ def _crawl() -> dict[str, list[dict[str, str | None]]]:
                 "link": link
             })
 
-        result[url] = url_result
+        result[_url] = url_result
 
     return result
 
@@ -99,19 +103,21 @@ def crawl():
     sources = get_sources()
     results = _crawl()
 
-    for source in sources["source"]:
-        url = source["url"]
+    for _url, _source in sources.items():
+        if not _source["options"]["disable_history"]:
+            for result in results[_url]:
+                if _source["options"]["disable_last_history_check"]:
+                    continue
 
-        for result in results[url]:
-            last_history = get_histories(url, 1, 0)
+                last_history = get_histories(_url, 1, 0)
 
-            # Check if the content is already in the history
-            if len(last_history) > 0 and last_history[0]["content"] == result["content"]:
-                continue
+                # Check if the content is already in the history
+                if len(last_history) > 0 and last_history[0]["content"] == result["content"]:
+                    continue
             
-            create_history(url, result["content"])
+                create_history(_url, result["content"])
 
-        if len(results[url]) > 0:
-            show_compressed_toast(source["name"], results[url][0]["content"], len(results[url]) - 1)
+        if len(results[_url]) > 0:
+            show_compressed_toast(_source["name"], results[_url][0]["content"], len(results[_url]) - 1)
         else:
-            show_toast(source["name"], results[url][0]["content"])
+            show_toast(_source["name"], results[_url][0]["content"])

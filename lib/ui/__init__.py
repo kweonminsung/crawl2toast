@@ -6,7 +6,6 @@ from lib.ui.settings_frame import settings_frame
 from lib.ui.error_logs_frame import error_logs_frame
 from lib.constants import APP_NAME, CHECK_UPDATE_URL
 from lib.crawler import crawl
-from lib.settings import get_sources
 
 
 def set_delete_window_handler(close: bool):
@@ -68,8 +67,6 @@ def initialize():
 
 def crawl_now_handler():
     global root
-
-    sources = get_sources()
 
     if messagebox.askyesno("확인", "지금 긁어오시겠습니까?"):
         crawl()

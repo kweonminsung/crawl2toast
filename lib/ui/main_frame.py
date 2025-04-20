@@ -6,9 +6,9 @@ from lib.settings import get_sources, load_sources
 
 history_offset = 0
 
-selected_url = None
-url_listbox = None
-history_listbox = None
+selected_url: str | None = None
+url_listbox: Listbox | None = None
+history_listbox: Listbox | None = None
 
 def main_frame(master: ttk.Notebook):
     global url_listbox
@@ -29,7 +29,6 @@ def main_frame(master: ttk.Notebook):
     url_listbox = Listbox(url_frame, height=5, yscrollcommand=url_listbox_scrollbar.set)
     url_listbox.pack(fill=X)
     url_listbox.bind('<<ListboxSelect>>', url_listbox_click_handler)
-    url_listbox.insert(0, "https://example.com")
     
 
     sp1 = ttk.Separator(main_frame, orient='horizontal')
@@ -60,24 +59,32 @@ def load_source():
 
     url_listbox.delete(0, END)
 
-    for source in sources["source"]:
-        url_listbox.insert(END, source["url"])
+    for _url, _source in sources.items():
+        url_listbox.insert(END, _url)
+
+    # url_listbox.insert(0, "https://example.com")
 
 
 def url_listbox_click_handler(event):
     global selected_url
     global history_offset
-    
+
     history_offset = 0
+    history_listbox.delete(0, END)
 
     selected_index = url_listbox.curselection()
     if not selected_index:
         return
-    selected_url = selected_index[0]
+    selected_url = url_listbox.get(selected_index[0])
 
-    histories = db.get_histories(url_listbox.get(selected_url), HISTORY_LIMIT, history_offset)
+    sources = get_sources()
 
-    history_listbox.delete(0, END)
+    if sources[selected_url]["options"]["disable_history"]:
+        history_listbox.insert(END, "이 URL은 기록을 저장하지 않습니다.")
+        return
+
+    histories = db.get_histories(selected_url, HISTORY_LIMIT, history_offset)
+
     for history in histories:
         # history_listbox.insert(END, history)
         history_listbox.insert(END, f"{utils.timestamp_to_datetime(history['timestamp'])} - {history['content']}")
@@ -88,7 +95,7 @@ def history_listbox_load_more():
     global selected_url
     global history_offset
     
-    append_histories = db.get_histories(url_listbox.get(selected_url), HISTORY_LIMIT, history_offset + HISTORY_LIMIT)
+    append_histories = db.get_histories(selected_url, HISTORY_LIMIT, history_offset + HISTORY_LIMIT)
 
     if len(append_histories) == 0:
         return

@@ -2,8 +2,8 @@ import json
 from datetime import datetime
 from lib.constants import SOURCES_FILE
 
-settings = None
-sources = None
+settings: dict | None = None
+sources: dict | None = None
 
 def initialize():
     from lib.db import get_all_settings
@@ -24,12 +24,16 @@ def load_sources():
     
     # Load sources from JSON file
     try:
-        with open(SOURCES_FILE) as f:
-            sources = json.load(f)
+        with open(SOURCES_FILE, encoding="utf-8") as f:
+            raw_source: list[dict] = json.load(f)["source"]
+
+            sources = dict()
+            for source in raw_source:
+                sources[source["url"]] = source
 
             need_renderer = False
-            for source in sources['source']:
-                if source["render_options"]["render"] == True:
+            for _url, _source in sources.items():
+                if _source["options"]["render"] == True:
                     need_renderer = True
                     break
 
@@ -49,7 +53,7 @@ def get_settings() -> dict[str, str | bool | datetime]:
     return settings
 
 
-def get_sources() -> dict[str, list[dict[str, str | None]]]:
+def get_sources() -> dict[str, dict[str, str | None]]:
     global sources
 
     return sources

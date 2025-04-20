@@ -38,6 +38,6 @@ def start():
 
 def stop():
     global icon
-    
+
     icon.stop()
     icon.visible = False
