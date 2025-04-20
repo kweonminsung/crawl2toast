@@ -8,7 +8,7 @@ import os
 import sys
 
 APP_NAME = "crawl2toast"
-HISTORY_LIMIT = 10
+HISTORY_LIMIT = 20
 
 toaster = ToastNotifier()
 
@@ -45,8 +45,8 @@ def url_listbox_click_handler(event):
 
     history_listbox.delete(0, END)
     for history in histories:
-        history_listbox.insert(END, history)
-        # history_listbox.insert(END, f"{utils.timestamp_to_datetime(history['timestamp'])} - {history['title']}")
+        # history_listbox.insert(END, history)
+        history_listbox.insert(END, f"{utils.timestamp_to_datetime(history['timestamp'])} - {history['title']}")
 
 
 def history_listbox_load_more():
@@ -55,7 +55,6 @@ def history_listbox_load_more():
     global history_offset
     
     append_histories = db.get_histories(url_listbox.get(selected_url), HISTORY_LIMIT, history_offset + HISTORY_LIMIT)
-    print(f"append_histories: {len(append_histories)}")
 
     if len(append_histories) == 0:
         return
@@ -63,8 +62,8 @@ def history_listbox_load_more():
     history_offset += HISTORY_LIMIT
 
     for i in range(len(append_histories)):
-        history_listbox.insert(END, append_histories[i])
-        # history_listbox.insert(END, f"{utils.timestamp_to_datetime(histories[history_offset]['timestamp'])} - {histories[history_offset]['title']}")
+        # history_listbox.insert(END, append_histories[i])
+        history_listbox.insert(END, f"{utils.timestamp_to_datetime(append_histories[i]['timestamp'])} - {append_histories[i]['title']}")
         
 
 def history_listbox_scrollbar_onscroll_handler(*args):
@@ -74,7 +73,7 @@ def history_listbox_scrollbar_onscroll_handler(*args):
     
     # Check scroll position
     pos = history_listbox.yview()
-    print(f"pos: {pos}")
+    # print(f"pos: {pos}")
 
     if pos[1] > 0.95:
         history_listbox_load_more()
@@ -85,7 +84,7 @@ def history_listbox_onscroll_handler(event):
 
     # Check scroll position
     pos = history_listbox.yview()
-    print(f"pos: {pos}")
+    # print(f"pos: {pos}")
 
     if pos[1] > 0.95:
         history_listbox_load_more()
@@ -207,8 +206,7 @@ def initialize():
 
 
     history_frame = Frame(main_frame)
-    # history_frame.pack(fill=BOTH, expand=True)
-    history_frame.pack(fill=X)
+    history_frame.pack(fill=BOTH, expand=True)
 
     history_label = Label(history_frame, text="기록", anchor='w')
     history_label.pack(fill=X, padx=3)
@@ -216,10 +214,9 @@ def initialize():
     history_listbox_scrollbar = ttk.Scrollbar(history_frame)
     history_listbox_scrollbar.pack(side=RIGHT, fill=Y)
     history_listbox_scrollbar.config(command=history_listbox_scrollbar_onscroll_handler)
-    history_listbox = Listbox(history_frame, yscrollcommand=history_listbox_scrollbar.set, height=9)
+    history_listbox = Listbox(history_frame, yscrollcommand=history_listbox_scrollbar.set)
     history_listbox.bind("<MouseWheel>", history_listbox_onscroll_handler)
-    # history_listbox.pack(fill=BOTH, expand=True)
-    history_listbox.pack(fill=X)
+    history_listbox.pack(fill=BOTH, expand=True)
 
 
 
