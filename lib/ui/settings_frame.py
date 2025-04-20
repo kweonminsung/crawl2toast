@@ -4,9 +4,14 @@ from lib.enums import SettingKey
 from lib.constants import APP_NAME
 from lib import stray
 from lib.db import Database, set_setting
+from lib.settings import get_settings
 import winreg
 import os
 import sys
+
+crawling_status_label: Label | None = None
+run_button: Button | None = None
+stop_button: Button | None = None
 
 start_onboot_checkbox_var: BooleanVar | None = None
 iconify_onclose_checkbox_var: BooleanVar | None = None
@@ -14,7 +19,9 @@ stray_checkbox_var: BooleanVar | None = None
 stray_checkbox: Checkbutton | None = None
 
 def settings_frame(master: ttk.Notebook):
-    from lib.settings import get_settings
+    global crawling_status_label
+    global run_button
+    global stop_button
 
     global start_onboot_checkbox_var
     global iconify_onclose_checkbox_var
@@ -26,30 +33,71 @@ def settings_frame(master: ttk.Notebook):
     settings_frame = Frame(master)
     master.add(settings_frame, text='설정')
 
-    run_button = Button(settings_frame, text="실행")
-    run_button.pack(pady=20)
+    # ----------------------------------------------------------------
 
-    stop_button = Button(settings_frame, text="중지")
-    stop_button.pack(pady=20)
+    crawling_options_labelframe = LabelFrame(settings_frame, text="크롤링 옵션")
+    crawling_options_labelframe.pack(padx=5, fill=X)
+
+
+    crawling_panedwindow = PanedWindow(crawling_options_labelframe, orient=HORIZONTAL, relief=RAISED, borderwidth=2)
+    crawling_panedwindow.pack(fill=X, padx=5, pady=5)
+
+    crawling_status_label = Label(crawling_panedwindow, text="로드 중", fg="yellow", width=10)
+    crawling_status_label.pack(side=LEFT, padx=2, fill=X, expand=True)
+    
+    run_button = Button(crawling_panedwindow, text="실행", command=lambda: set_operation(True))
+    run_button.pack(side=LEFT, padx=2, fill=X, expand=True)
+
+    stop_button = Button(crawling_panedwindow, text="중지", command=lambda: set_operation(False))
+    stop_button.pack(side=RIGHT, padx=2, fill=X, expand=True)
+
+    set_operation(settings[SettingKey.RECENT_STATUS.value])
+
+    # ----------------------------------------------------------------
+
+    system_options_labelframe = LabelFrame(settings_frame, text="시스템 옵션")
+    system_options_labelframe.pack(padx=5, fill=X)
 
     start_onboot_checkbox_var = BooleanVar(value=settings[SettingKey.START_ONBOOT.value])
-    start_onboot_checkbox = Checkbutton(settings_frame, text="윈도우 시작 시 실행", variable=start_onboot_checkbox_var, command=start_onboot_checkbox_click_handler)
-    start_onboot_checkbox.pack(pady=20)
+    start_onboot_checkbox = Checkbutton(system_options_labelframe, text="윈도우 시작 시 실행", variable=start_onboot_checkbox_var, command=start_onboot_checkbox_click_handler)
+    start_onboot_checkbox.pack(padx=5, pady=1, anchor='w')
 
     iconify_onclose_checkbox_var = BooleanVar(value=settings[SettingKey.ICONIFY_ONCLOSE.value])
-    iconify_onclose_checkbox = Checkbutton(settings_frame, text="X 버튼 클릭 시 창 최소화", variable=iconify_onclose_checkbox_var, command=iconify_onclose_checkbox_click_handler)
-    iconify_onclose_checkbox.pack(pady=20)
+    iconify_onclose_checkbox = Checkbutton(system_options_labelframe, text="X 버튼 클릭 시 창 최소화", variable=iconify_onclose_checkbox_var, command=iconify_onclose_checkbox_click_handler)
+    iconify_onclose_checkbox.pack(padx=5, pady=1, anchor='w')
 
     stray_checkbox_var = BooleanVar(value=settings[SettingKey.STRAY.value])
-    stray_checkbox = Checkbutton(settings_frame, text="작업 표시줄에 아이콘 표시", variable=stray_checkbox_var, command=stray_checkbox_click_handler)
+    stray_checkbox = Checkbutton(system_options_labelframe, text="작업 표시줄에 아이콘 표시", variable=stray_checkbox_var, command=stray_checkbox_click_handler)
     stray_checkbox.config(state= "disabled" if settings[SettingKey.ICONIFY_ONCLOSE.value] else "normal")
-    stray_checkbox.pack(pady=20)
+    stray_checkbox.pack(padx=5, pady=(1, 5), anchor='w')
 
-    reset_history_button = Button(settings_frame, text="기록 초기화", command=lambda: messagebox.showinfo("기록 초기화", "기록이 초기화되었습니다."))
-    reset_history_button.pack(pady=20)
+    # ----------------------------------------------------------------
 
-    reset_error_log_button = Button(settings_frame, text="실패 로그 초기화", command=lambda: messagebox.showinfo("실패 로그 초기화", "실패 로그가 초기화되었습니다."))
-    reset_error_log_button.pack(pady=20)
+    reset_options_labelframe = LabelFrame(settings_frame, text="초기화")
+    reset_options_labelframe.pack(padx=5, fill=X)
+
+    reset_history_button = Button(reset_options_labelframe, text="기록 초기화", command=lambda: messagebox.showinfo("기록 초기화", "기록이 초기화되었습니다."))
+    reset_history_button.pack(anchor='w', padx=5, pady=1)
+
+    reset_error_log_button = Button(reset_options_labelframe, text="실패 로그 초기화", command=lambda: messagebox.showinfo("실패 로그 초기화", "실패 로그가 초기화되었습니다."))
+    reset_error_log_button.pack(anchor='w', padx=5, pady=(1, 5))
+
+
+def set_operation(status: bool):
+    global crawling_status_label
+    global run_button
+    global stop_button
+
+    if status:
+        crawling_status_label.config(text="실행 중", fg="green")
+        set_setting(Database().get_connection(), SettingKey.RECENT_STATUS, True)
+        run_button.config(state="disabled")
+        stop_button.config(state="normal")
+    else:
+        crawling_status_label.config(text="중지됨", fg="red")
+        set_setting(Database().get_connection(), SettingKey.RECENT_STATUS, False)
+        run_button.config(state="normal")
+        stop_button.config(state="disabled")
 
 
 def set_start_onboot(enable: bool):
