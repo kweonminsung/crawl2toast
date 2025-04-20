@@ -1,9 +1,12 @@
-from lib import ui, settings, db, stray
+from lib import ui, settings, stray, crawler
+from lib.db import Database
 
 def main():
-    db.initialize()
+    Database()
 
     settings.initialize()
+
+    crawler.initialize()
 
     stray.initialize()
 

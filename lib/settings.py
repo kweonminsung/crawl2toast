@@ -6,12 +6,12 @@ settings: dict | None = None
 sources: dict | None = None
 
 def initialize():
-    from lib.db import get_all_settings
-    
+    from lib.db import Database, get_all_settings
+
     global settings
     
     # Load settings from db
-    settings = get_all_settings()
+    settings = get_all_settings(Database().get_connection())
     print("Settings loaded successfully.")
 
     # Load sources from JSON file
@@ -30,16 +30,6 @@ def load_sources():
             sources = dict()
             for source in raw_source:
                 sources[source["url"]] = source
-
-            need_renderer = False
-            for _url, _source in sources.items():
-                if _source["options"]["render"] == True:
-                    need_renderer = True
-                    break
-
-            if need_renderer:
-                from lib.crawler import initialize_selenium_driver
-                initialize_selenium_driver()
                 
     except FileNotFoundError:
         raise Exception("Sources file not found.")

@@ -2,7 +2,8 @@ from tkinter import *
 from tkinter import ttk, messagebox
 from lib.enums import SettingKey
 from lib.constants import APP_NAME
-from lib import stray, db
+from lib import stray
+from lib.db import Database, set_setting
 import winreg
 import os
 import sys
@@ -71,7 +72,8 @@ def start_onboot_checkbox_click_handler():
     global start_onboot_checkbox_var
 
     start_onboot_var = start_onboot_checkbox_var.get()
-    db.set_setting(SettingKey.START_ONBOOT, start_onboot_var)
+
+    set_setting(Database().get_connection(), SettingKey.START_ONBOOT, start_onboot_var)
 
     if start_onboot_var:
         set_start_onboot(True)
@@ -87,7 +89,7 @@ def iconify_onclose_checkbox_click_handler():
     global stray_checkbox
 
     iconify_var = iconify_onclose_checkbox_var.get()
-    db.set_setting(SettingKey.ICONIFY_ONCLOSE, iconify_var)
+    set_setting(Database().get_connection(), SettingKey.ICONIFY_ONCLOSE, iconify_var)
 
     if iconify_var:
         set_delete_window_handler(False)
@@ -102,7 +104,7 @@ def stray_checkbox_click_handler():
     global stray_checkbox_var
 
     stray_var = stray_checkbox_var.get()
-    db.set_setting(SettingKey.STRAY, stray_var)
+    set_setting(Database().get_connection(), SettingKey.STRAY, stray_var)
 
     if stray_var:
         stray.start()

@@ -1,6 +1,7 @@
 from tkinter import *
 from tkinter import ttk
-from lib import db, utils
+from lib import utils
+from lib.db import Database, get_histories
 from lib.constants import HISTORY_LIMIT
 from lib.settings import get_sources, load_sources
 
@@ -83,7 +84,7 @@ def url_listbox_click_handler(event):
         history_listbox.insert(END, "이 URL은 기록을 저장하지 않습니다.")
         return
 
-    histories = db.get_histories(selected_url, HISTORY_LIMIT, history_offset)
+    histories = get_histories(Database().get_connection(), selected_url, HISTORY_LIMIT, history_offset)
 
     for history in histories:
         # history_listbox.insert(END, history)
@@ -95,7 +96,7 @@ def history_listbox_load_more():
     global selected_url
     global history_offset
     
-    append_histories = db.get_histories(selected_url, HISTORY_LIMIT, history_offset + HISTORY_LIMIT)
+    append_histories = get_histories(Database().get_connection(), selected_url, HISTORY_LIMIT, history_offset + HISTORY_LIMIT)
 
     if len(append_histories) == 0:
         return
