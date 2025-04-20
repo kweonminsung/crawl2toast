@@ -4,7 +4,6 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.common.exceptions import TimeoutException
 from webdriver_manager.chrome import ChromeDriverManager
-from lib.settings import get_settings
 
 USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"
 
@@ -52,11 +51,13 @@ def get_html_by_request(url: str) -> str:
 
 
 def crawl() -> dict[str, list[dict[str, str | None]]]:
-    settings = get_settings()
+    from lib.settings import get_sources
+    
+    sources = get_sources()
     
     result = dict()
 
-    for source in settings["source"]:
+    for source in sources["source"]:
         url_result = list()
 
         url = source["url"]

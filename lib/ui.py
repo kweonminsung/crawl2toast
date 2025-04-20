@@ -1,7 +1,8 @@
 from tkinter import *
 from tkinter import ttk, messagebox
 from win10toast import ToastNotifier
-from lib import crawler
+from lib import crawler, stray, db
+from lib.enums import SettingKey
 import winreg
 import os
 import sys
@@ -40,20 +41,36 @@ def set_start_onboot(enable: bool):
 
 
 def start_onboot_checkbox_click_handler():
-    if start_onboot_checkbox_var.get():
+    start_onboot_var = start_onboot_checkbox_var.get()
+    db.set_setting(SettingKey.START_ONBOOT, start_onboot_var)
+
+    if start_onboot_var:
         set_start_onboot(True)
     else:
         set_start_onboot(False)
 
 
 def iconify_onclose_checkbox_click_handler():
-    if iconify_onclose_checkbox_var.get():
+    iconify_var = iconify_onclose_checkbox_var.get()
+    db.set_setting(SettingKey.ICONIFY_ONCLOSE, iconify_var)
+
+    if iconify_var:
         root.protocol("WM_DELETE_WINDOW", root.iconify)
         stray_checkbox.config(state="normal")
     else:
         root.protocol("WM_DELETE_WINDOW", root.quit)
         stray_checkbox.config(state="disabled")
+        stray_checkbox_var.set(False)
 
+
+def stray_checkbox_click_handler():
+    stray_var = stray_checkbox_var.get()
+    db.set_setting(SettingKey.STRAY, stray_var)
+
+    if stray_var:
+        stray.start()
+    else:
+        stray.stop()
 
 def test():
     result = crawler.crawl()
@@ -62,12 +79,16 @@ def test():
     
 
 def initialize():
+    from lib.settings import get_settings
+
     global root
     global log_listbox
     global start_onboot_checkbox_var
     global iconify_onclose_checkbox_var
     global stray_checkbox_var
     global stray_checkbox
+
+    settings = get_settings()
 
     root = Tk()
     root.title(APP_NAME)
@@ -100,16 +121,17 @@ def initialize():
     settings_frame = Frame(notebook)
     notebook.add(settings_frame, text='설정')
 
-    start_onboot_checkbox_var = BooleanVar()
+    start_onboot_checkbox_var = BooleanVar(value=settings[SettingKey.START_ONBOOT.value])
     start_onboot_checkbox = Checkbutton(settings_frame, text="윈도우 시작 시 실행", variable=start_onboot_checkbox_var, command=start_onboot_checkbox_click_handler)
     start_onboot_checkbox.pack(pady=20)
 
-    iconify_onclose_checkbox_var = BooleanVar()
+    iconify_onclose_checkbox_var = BooleanVar(value=settings[SettingKey.ICONIFY_ONCLOSE.value])
     iconify_onclose_checkbox = Checkbutton(settings_frame, text="X 버튼 클릭 시 창 최소화", variable=iconify_onclose_checkbox_var, command=iconify_onclose_checkbox_click_handler)
     iconify_onclose_checkbox.pack(pady=20)
 
-    stray_checkbox_var = BooleanVar()
-    stray_checkbox = Checkbutton(settings_frame, text="작업 표시줄에 아이콘 표시", variable=stray_checkbox_var)
+    stray_checkbox_var = BooleanVar(value=settings[SettingKey.STRAY.value])
+    stray_checkbox = Checkbutton(settings_frame, text="작업 표시줄에 아이콘 표시", variable=stray_checkbox_var, command=stray_checkbox_click_handler)
+    stray_checkbox.config(state= "disabled" if settings[SettingKey.ICONIFY_ONCLOSE.value] else "normal")
     stray_checkbox.pack(pady=20)
 
     reset_history_button = Button(settings_frame, text="기록 초기화", command=lambda: messagebox.showinfo("로그 초기화", "로그가 초기화되었습니다."))

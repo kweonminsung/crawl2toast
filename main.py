@@ -1,13 +1,11 @@
-from lib import ui, settings, stray
-import threading
+from lib import ui, settings, db, stray
 
 def main():
+    db.initialize()
+
     settings.initialize()
 
-    # multithreading for stray icon
-    stray_thread = threading.Thread(target=stray.initialize)
-    stray_thread.daemon = True
-    stray_thread.start()
+    stray.initialize()
 
     ui.initialize()
 

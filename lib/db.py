@@ -1,16 +1,12 @@
 import sqlite3
-from enum import Enum
-
-class SettingKey(Enum):
-    START_ONBOOT = "start_onboot"
-    ICONIFY_ONCLOSE = "iconify_onclose"
-    STRAY = "stray"
-
+from datetime import datetime
+from lib.enums import SettingKey
 
 conn = None
 
 def initialize():
     global conn
+    
     conn = sqlite3.connect('data.db')
     cursor = conn.cursor()
     
@@ -21,6 +17,17 @@ def initialize():
             value TEXT NOT NULL
         )
     ''')
+    cursor.executemany('''
+        INSERT OR IGNORE INTO settings (key, value) VALUES (?, ?)
+    ''', [
+        (SettingKey.RECENT_STATUS.value, 'False'),
+        (SettingKey.START_ONBOOT.value, 'False'),
+        (SettingKey.ICONIFY_ONCLOSE.value, 'True'),
+        (SettingKey.STRAY.value, 'True'),
+        (SettingKey.INTERVAL.value, '12:00:00'),
+        (SettingKey.RECENT_CRAWL.value, '2023-10-01 00:00:00')
+    ])
+
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS error_logs (
             id INTEGER PRIMARY KEY,
@@ -40,17 +47,18 @@ def terminate():
         conn = None
 
 
-def get_setting(key: SettingKey) -> str | None:
+def get_all_settings() -> dict[str, str | bool | datetime]:
     global conn
 
     cursor = conn.cursor()
-    cursor.execute(f"SELECT value FROM settings WHERE key = '{key.value}'")
-    result = cursor.fetchone()
+    cursor.execute("SELECT * FROM settings")
+    rows = cursor.fetchall()
 
-    if result:
-        return result[0]
-    else:
-        return None
+    result = {}
+    for row in rows:
+        result[row[1]] = row[2]
+
+    return result
 
 
 def set_setting(key: SettingKey, value: str) -> None:
