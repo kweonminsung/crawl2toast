@@ -42,16 +42,10 @@ def initialize():
 def get_settings() -> dict[str, str | bool | datetime]:
     global settings
 
-    if settings is None:
-        raise Exception("Settings not loaded.")
-
     return settings
 
 
 def get_sources() -> dict[str, list[dict[str, str | None]]]:
     global sources
-
-    if sources is None:
-        raise Exception("Sources not loaded.")
 
     return sources

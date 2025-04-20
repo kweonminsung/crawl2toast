@@ -12,6 +12,7 @@ HISTORY_LIMIT = 10
 
 toaster = ToastNotifier()
 
+selected_url = None
 history_offset = 0
 
 root = None
@@ -30,10 +31,8 @@ def deiconify():
 
 
 def url_listbox_click_handler(event):
+    global selected_url
     global history_offset
-
-    if url_listbox is None or history_listbox is None:
-        raise Exception("url_listbox is not initialized.")
     
     history_offset = 0
 
@@ -46,7 +45,50 @@ def url_listbox_click_handler(event):
 
     history_listbox.delete(0, END)
     for history in histories:
-        history_listbox.insert(END, f"{utils.timestamp_to_datetime(history['timestamp'])} - {history['title']}")
+        history_listbox.insert(END, history)
+        # history_listbox.insert(END, f"{utils.timestamp_to_datetime(history['timestamp'])} - {history['title']}")
+
+
+def history_listbox_load_more():
+    global history_listbox
+    global selected_url
+    global history_offset
+    
+    append_histories = db.get_histories(url_listbox.get(selected_url), HISTORY_LIMIT, history_offset + HISTORY_LIMIT)
+    print(f"append_histories: {len(append_histories)}")
+
+    if len(append_histories) == 0:
+        return
+
+    history_offset += HISTORY_LIMIT
+
+    for i in range(len(append_histories)):
+        history_listbox.insert(END, append_histories[i])
+        # history_listbox.insert(END, f"{utils.timestamp_to_datetime(histories[history_offset]['timestamp'])} - {histories[history_offset]['title']}")
+        
+
+def history_listbox_scrollbar_onscroll_handler(*args):
+    global history_listbox
+
+    history_listbox.yview(*args)
+    
+    # Check scroll position
+    pos = history_listbox.yview()
+    print(f"pos: {pos}")
+
+    if pos[1] > 0.95:
+        history_listbox_load_more()
+
+
+def history_listbox_onscroll_handler(event):
+    global history_listbox
+
+    # Check scroll position
+    pos = history_listbox.yview()
+    print(f"pos: {pos}")
+
+    if pos[1] > 0.95:
+        history_listbox_load_more()
 
 
 def set_start_onboot(enable: bool):
@@ -66,6 +108,8 @@ def set_start_onboot(enable: bool):
 
 
 def start_onboot_checkbox_click_handler():
+    global start_onboot_checkbox_var
+
     start_onboot_var = start_onboot_checkbox_var.get()
     db.set_setting(SettingKey.START_ONBOOT, start_onboot_var)
 
@@ -76,6 +120,10 @@ def start_onboot_checkbox_click_handler():
 
 
 def iconify_onclose_checkbox_click_handler():
+    global iconify_onclose_checkbox_var
+    global stray_checkbox_var
+    global stray_checkbox
+
     iconify_var = iconify_onclose_checkbox_var.get()
     db.set_setting(SettingKey.ICONIFY_ONCLOSE, iconify_var)
 
@@ -89,6 +137,8 @@ def iconify_onclose_checkbox_click_handler():
 
 
 def stray_checkbox_click_handler():
+    global stray_checkbox_var
+
     stray_var = stray_checkbox_var.get()
     db.set_setting(SettingKey.STRAY, stray_var)
 
@@ -96,11 +146,6 @@ def stray_checkbox_click_handler():
         stray.start()
     else:
         stray.stop()
-
-def test():
-    result = crawler.crawl()
-    print(result)
-    # toaster.show_toast(result[])
     
 
 def initialize():
@@ -137,10 +182,10 @@ def initialize():
     url_frame.pack(fill=X)
 
     url_label = Label(url_frame, text="URL", anchor='w')
-    url_label.pack(fill=X, padx=0.5)
+    url_label.pack(fill=X, padx=3)
 
     url_listbox_scrollbar = ttk.Scrollbar(url_frame)
-    url_listbox_scrollbar.pack(side=RIGHT)
+    url_listbox_scrollbar.pack(side=RIGHT, fill=Y)
     url_listbox = Listbox(url_frame, height=5, yscrollcommand=url_listbox_scrollbar.set)
     url_listbox.pack(fill=X)
 
@@ -149,20 +194,32 @@ def initialize():
     url_listbox.insert(1, "https://example.com")    
     url_listbox.insert(2, "https://example.com")
     url_listbox.insert(3, "https://example.com")
+    url_listbox.insert(4, "https://example.com")
+    url_listbox.insert(5, "https://example.com")
+    url_listbox.insert(6, "https://example.com")
+    url_listbox.insert(7, "https://example.com")
+    url_listbox.insert(8, "https://example.com")
+    url_listbox.insert(9, "https://example.com")
     
+
     sp1 = ttk.Separator(main_frame, orient='horizontal')
     sp1.pack(fill=X)
 
+
     history_frame = Frame(main_frame)
-    history_frame.pack(fill=BOTH, expand=True)
+    # history_frame.pack(fill=BOTH, expand=True)
+    history_frame.pack(fill=X)
 
     history_label = Label(history_frame, text="기록", anchor='w')
-    history_label.pack(fill=BOTH, padx=3)
+    history_label.pack(fill=X, padx=3)
 
     history_listbox_scrollbar = ttk.Scrollbar(history_frame)
-    history_listbox_scrollbar.pack(side=RIGHT)
-    history_listbox = Listbox(history_frame, yscrollcommand=history_listbox_scrollbar.set)
-    history_listbox.pack(fill=BOTH, expand=True)
+    history_listbox_scrollbar.pack(side=RIGHT, fill=Y)
+    history_listbox_scrollbar.config(command=history_listbox_scrollbar_onscroll_handler)
+    history_listbox = Listbox(history_frame, yscrollcommand=history_listbox_scrollbar.set, height=9)
+    history_listbox.bind("<MouseWheel>", history_listbox_onscroll_handler)
+    # history_listbox.pack(fill=BOTH, expand=True)
+    history_listbox.pack(fill=X)
 
 
 

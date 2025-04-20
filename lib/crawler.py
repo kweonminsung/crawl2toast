@@ -30,6 +30,8 @@ def terminate_selenium_driver():
     
 
 def get_html_by_selenium(url: str, wait: int) -> str:
+    global selenium_driver
+    
     try:
         selenium_driver.get(url)
     except TimeoutException:
@@ -52,7 +54,7 @@ def get_html_by_request(url: str) -> str:
 
 def crawl() -> dict[str, list[dict[str, str | None]]]:
     from lib.settings import get_sources
-    
+
     sources = get_sources()
     
     result = dict()

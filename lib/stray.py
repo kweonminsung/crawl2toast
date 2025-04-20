@@ -20,12 +20,16 @@ def initialize():
 
 
 def exit_application():
+    global icon
+
     if icon:
         icon.stop()
     os._exit(0)
 
 
 def start():
+    global icon
+
     # multithreading for stray icon
     stray_thread = threading.Thread(target=icon.run)
     stray_thread.daemon = True
@@ -33,5 +37,7 @@ def start():
 
 
 def stop():
+    global icon
+    
     icon.stop()
     icon.visible = False
