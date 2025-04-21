@@ -70,13 +70,18 @@ def url_listbox_click_handler(event):
     global selected_url
     global history_offset
 
-    history_offset = 0
-    history_listbox.delete(0, END)
-
     selected_index = url_listbox.curselection()
     if not selected_index:
         return
-    selected_url = url_listbox.get(selected_index[0])
+    new_selected_url = url_listbox.get(selected_index[0])
+
+    # Do not update if the selected URL is the same as the previous one
+    if new_selected_url == selected_url:
+        return
+
+    selected_url = new_selected_url    
+    history_offset = 0
+    history_listbox.delete(0, END)
 
     sources = get_sources()
 
