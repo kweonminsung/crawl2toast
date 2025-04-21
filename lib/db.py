@@ -1,6 +1,6 @@
 import sqlite3
 from sqlite3 import Connection
-from datetime import datetime
+from datetime import datetime, time
 from lib.enums import SettingKey
 from threading import Lock
 
@@ -70,14 +70,30 @@ class Database:
             self.conn = None
 
 
-def get_all_settings(conn: Connection) -> dict[str, str | bool | datetime]:
+def get_all_settings(conn: Connection) -> dict[str, str | bool | datetime | time]:
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM settings")
     rows = cursor.fetchall()
 
-    result = {}
+    def convert_to_bool(value: str) -> bool:
+        return value.lower() == 'true'
+    
+    result = dict()
     for row in rows:
-        result[row[1]] = row[2]
+        if row[1] == SettingKey.RECENT_STATUS.value:
+            result[row[1]] = convert_to_bool(row[2])
+        elif row[1] == SettingKey.START_ONBOOT.value:
+            result[row[1]] = convert_to_bool(row[2])
+        elif row[1] == SettingKey.ICONIFY_ONCLOSE.value:
+            result[row[1]] = convert_to_bool(row[2])
+        elif row[1] == SettingKey.STRAY.value:
+            result[row[1]] = convert_to_bool(row[2])
+        elif row[1] == SettingKey.INTERVAL.value:
+            result[row[1]] = datetime.strptime(row[2], "%H:%M:%S").time()
+        elif row[1] == SettingKey.RECENT_CRAWL.value:
+            result[row[1]] = datetime.strptime(row[2], "%Y-%m-%d %H:%M:%S")
+        else:
+            result[row[1]] = row[2]
 
     return result
 

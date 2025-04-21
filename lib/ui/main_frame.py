@@ -5,7 +5,7 @@ from lib.db import Database, get_histories
 from lib.constants import HISTORY_LIMIT
 from lib.settings import get_sources, load_sources
 
-history_offset = 0
+history_offset: int = 0
 
 selected_url: str | None = None
 url_listbox: Listbox | None = None

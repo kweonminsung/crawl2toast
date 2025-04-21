@@ -3,7 +3,7 @@
     "source": [
         {
             // 구분을 위한 이름
-            "name": "SKKU CSE Notice",
+            "name": "성균관대학교 소프트웨어학과 공지사항",
             // 긁어올 URL
             "url": "https://cse.skku.edu/cse/notice.do?mode=list&&articleLimit=10&article.offset=10",
             // 긁어올 HTML의 selector

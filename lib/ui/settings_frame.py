@@ -42,15 +42,17 @@ def settings_frame(master: ttk.Notebook):
     crawling_panedwindow = PanedWindow(crawling_options_labelframe, orient=HORIZONTAL, relief=RAISED, borderwidth=2)
     crawling_panedwindow.pack(fill=X, padx=5, pady=5)
 
-    crawling_status_label = Label(crawling_panedwindow, text="로드 중", fg="yellow", width=10)
+    crawling_status_label = Label(crawling_panedwindow, text="로드 중", fg="orange", width=10)
     crawling_status_label.pack(side=LEFT, padx=2, fill=X, expand=True)
     
     run_button = Button(crawling_panedwindow, text="실행", command=lambda: set_operation(True))
-    run_button.pack(side=LEFT, padx=2, fill=X, expand=True)
+    run_button.pack(side=LEFT, padx=2, pady=2, fill=X, expand=True)
+    run_button.config(state="disabled")
 
     stop_button = Button(crawling_panedwindow, text="중지", command=lambda: set_operation(False))
-    stop_button.pack(side=RIGHT, padx=2, fill=X, expand=True)
-
+    stop_button.pack(side=RIGHT, padx=2, pady=2, fill=X, expand=True)
+    stop_button.config(state="disabled")
+    
     set_operation(settings[SettingKey.RECENT_STATUS.value])
 
     # ----------------------------------------------------------------
@@ -83,7 +85,7 @@ def settings_frame(master: ttk.Notebook):
     reset_error_log_button.pack(anchor='w', padx=5, pady=(1, 5))
 
 
-def set_operation(status: bool):
+def set_operation(status):
     global crawling_status_label
     global run_button
     global stop_button
@@ -145,7 +147,6 @@ def iconify_onclose_checkbox_click_handler():
     else:
         set_delete_window_handler(True)
         stray_checkbox.config(state="disabled")
-        stray_checkbox_var.set(False)
 
 
 def stray_checkbox_click_handler():

@@ -3,8 +3,7 @@ import pystray
 import threading
 from PIL import Image
 import os
-
-APP_NAME = "crawl2toast"
+from lib.constants import APP_NAME
 
 icon = None
 

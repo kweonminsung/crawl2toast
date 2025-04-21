@@ -1,8 +1,8 @@
 import json
-from datetime import datetime
+from datetime import datetime, time
 from lib.constants import SOURCES_FILE
 
-settings: dict | None = None
+settings: dict[str, str | bool | datetime | time] | None = None
 sources: dict | None = None
 
 def initialize():
@@ -37,7 +37,7 @@ def load_sources():
         raise Exception("Error decoding JSON from sources file.")
     
 
-def get_settings() -> dict[str, str | bool | datetime]:
+def get_settings() -> dict[str, str | bool | datetime | time]:
     global settings
 
     return settings
