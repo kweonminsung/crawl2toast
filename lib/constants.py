@@ -1,5 +1,7 @@
 APP_NAME = "crawl2toast"
 
+DATABASE_URL = 'data.db'
+
 SOURCES_FILE = 'source.json'
 
 HISTORY_LIMIT = 30

@@ -1,10 +1,11 @@
 import requests
 from bs4 import BeautifulSoup
 from selenium.common.exceptions import TimeoutException
-from lib.db import Database, create_history, get_histories
+from lib.db import Database, create_history, get_histories, create_log
 from lib.toaster import show_toast, show_compressed_toast
 from lib.constants import USER_AGENT
 from lib.settings import get_sources
+from datetime import datetime
 
 def get_html_by_selenium(url: str, wait: int) -> str:
     from lib.crawler import get_selenium_driver
@@ -14,7 +15,7 @@ def get_html_by_selenium(url: str, wait: int) -> str:
     try:
         selenium_driver.get(url)
     except TimeoutException:
-        raise Exception("Timeout while loading the page.")
+        raise Exception(f"TimeoutException: HTTP ({url})")
     
     selenium_driver.implicitly_wait(wait)
     
@@ -28,13 +29,11 @@ def get_html_by_request(url: str) -> str:
         return response.text
 
     else:
-        raise Exception(f"Failed to retrieve the page. Status code: {response.status_code}")
+        raise Exception(f"TimeoutException: HTTP {response.status_code}({url})")
 
 
-def _crawl() -> dict[str, list[dict[str, str | None]]]:
+def crawl():
     sources = get_sources()
-    
-    result = dict()
 
     for _url, _source in sources.items():
         url_result = list()
@@ -43,53 +42,64 @@ def _crawl() -> dict[str, list[dict[str, str | None]]]:
 
         html = None
 
-        if _source["options"]["render"]:
-            wait = _source["options"]["render_wait"]
-            html = get_html_by_selenium(_url, wait)
-        else:
-            html = get_html_by_request(_url)
+        try:
+            if _source["options"]["render"]:
+                wait = _source["options"]["render_wait"]
+                html = get_html_by_selenium(_url, wait)
+            else:
+                html = get_html_by_request(_url)
+                
+            soup = BeautifulSoup(html, 'html.parser')
+
+            try:
+                parent_element = soup.select_one(selector["parent"])
+            except Exception as e:
+                raise Exception(f"ElementNotFoundException: {selector['parent']}({_url})")
             
-        soup = BeautifulSoup(html, 'html.parser')
-        parent_element = soup.select_one(selector["parent"])
+            try:
+                child_elements = parent_element.find_all(selector["child"], recursive=False)
+            except Exception as e:
+                raise Exception(f"ElementNotFoundException: {selector['parent']} > {selector['child']}({_url})")
 
-        for child_element in parent_element.find_all(selector["child"], recursive=False):
-            # print(child_element.select_one(selector["crawl_title"]).text)
+            for child_element in child_elements:
+                try:
+                    content = str(child_element.select_one(selector["crawl_content"]).get_text()).strip()
+                except Exception as e:
+                    raise Exception(f"ElementNotFoundException: {selector['parent']} > {selector['child']} > {selector['crawl_content']}({_url})")
 
-            content = str(child_element.select_one(selector["crawl_content"]).text).strip()
+                link = None
+                if selector["crawl_link"] is not None:
+                    try:
+                        link = str(child_element.select_one(selector["crawl_link"])["href"]).strip()
+                    except Exception as e:
+                        raise Exception(f"ElementNotFoundException: {selector['parent']} > {selector['child']} > {selector['crawl_link']}({_url})")
 
-            link = None
-            if selector["crawl_link"] is not None:
-                link = str(child_element.select_one(selector["crawl_link"])["href"]).strip()
+                url_result.append({
+                    "content": content,
+                    "link": link
+                })
 
-            url_result.append({
-                "content": content,
-                "link": link
-            })
-
-        result[_url] = url_result
-
-    return result
-
-
-def crawl():
-    sources = get_sources()
-    results = _crawl()
-
-    for _url, _source in sources.items():
-        if not _source["options"]["disable_history"]:
-            for result in results[_url]:
-                if _source["options"]["disable_last_history_check"]:
-                    continue
-
+            if not _source["options"]["disable_history"]:
                 last_history = get_histories(Database().get_connection(), _url, 1, 0)
 
-                # Check if the content is already in the history
-                if len(last_history) > 0 and last_history[0]["content"] == result["content"]:
-                    continue
-            
-                create_history(Database().get_connection(), _url, result["content"])
+                for result in url_result:
+                    # Check if the content is already in the history
+                    if _source["options"]["disable_last_history_check"] and len(last_history) > 0 and last_history[0]["content"] == result["content"]:
+                        continue
+                
+                    create_history(Database().get_connection(), _url, result["content"])
 
-        if len(results[_url]) > 0:
-            show_compressed_toast(_source["name"], results[_url][0]["content"], len(results[_url]) - 1)
-        else:
-            show_toast(_source["name"], results[_url][0]["content"])
+            if len(url_result) > 0:
+                show_compressed_toast(_source["name"], url_result[0]["content"], len(url_result) - 1)
+            else:
+                show_toast(_source["name"], url_result[0]["content"])
+
+
+            
+            create_log(Database().get_connection(), _url, True, "Crawled successfully")
+            
+            from lib.ui.settings_frame import set_recent_crawl
+            set_recent_crawl(datetime.now())
+        except Exception as e:
+            create_log(Database().get_connection(), _url, False, str(e))
+            # print(f"Error occurred while crawling: {e}")

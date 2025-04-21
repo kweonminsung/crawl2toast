@@ -1,5 +1,4 @@
 from pystray import MenuItem as item
-from lib.crawler import request_crawl
 import pystray
 import threading
 from PIL import Image
@@ -11,11 +10,12 @@ icon_lock = threading.Lock()
 
 def initialize():
     from lib.ui import deiconify
+    from lib.ui.settings_frame import crawl_now_handler
 
     global icon
 
     image = Image.open("public/icon.ico")
-    menu = (item('지금 긁어오기', request_crawl), item('설정 열기', deiconify), item('종료', exit_application))
+    menu = (item('지금 긁어오기', crawl_now_handler), item('설정 열기', deiconify), item('종료', exit_application))
 
     icon = pystray.Icon(APP_NAME, image, APP_NAME, menu)
 

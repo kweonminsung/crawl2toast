@@ -2,6 +2,7 @@ import sqlite3
 from sqlite3 import Connection
 from datetime import datetime, time
 from lib.enums import SettingKey
+from lib.constants import DATABASE_URL
 from threading import Lock
 
 class Database:
@@ -20,7 +21,7 @@ class Database:
     def _initialize(self):
         print("Database initialized successfully.")
         
-        self.conn = sqlite3.connect('data.db', check_same_thread=False)
+        self.conn = sqlite3.connect(DATABASE_URL, check_same_thread=False)
         self._create_tables()
 
     def _create_tables(self):
@@ -52,9 +53,10 @@ class Database:
             )
         ''')
         cursor.execute('''
-            CREATE TABLE IF NOT EXISTS error_logs (
+            CREATE TABLE IF NOT EXISTS logs (
                 id INTEGER PRIMARY KEY,
                 url TEXT NOT NULL,
+                ok TEXT NOT NULL,
                 message TEXT NULL,
                 timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
             )
@@ -127,9 +129,9 @@ def get_histories(conn: Connection, url: str, limit: int, offset: int) -> list[d
     return result
 
 
-def get_error_logs(conn: Connection, limit: int, offset: int) -> list[dict[str, str | None]]:
+def get_logs(conn: Connection, limit: int, offset: int) -> list[dict[str, str | None]]:
     cursor = conn.cursor()
-    cursor.execute(f"SELECT * FROM error_logs ORDER BY timestamp DESC LIMIT {limit} OFFSET {offset}")
+    cursor.execute(f"SELECT * FROM logs ORDER BY timestamp DESC LIMIT {limit} OFFSET {offset}")
     rows = cursor.fetchall()
 
     result = []
@@ -137,14 +139,15 @@ def get_error_logs(conn: Connection, limit: int, offset: int) -> list[dict[str, 
         result.append({
             "id": row[0],
             "url": row[1],
-            "message": row[2],
-            "timestamp": row[3]
+            "ok": row[2],
+            "message": row[3],
+            "timestamp": row[4]
         })
 
     return result
 
 
-def create_error_log(conn: Connection, url: str, message: str) -> None:
+def create_log(conn: Connection, url: str, ok: bool, message: str) -> None:
     cursor = conn.cursor()
-    cursor.execute(f"INSERT INTO error_logs (url, message) VALUES ('{url}', '{message}')")
+    cursor.execute("INSERT INTO logs (url, ok, message) VALUES (?, ?, ?)", (url, str(ok), message))
     conn.commit()

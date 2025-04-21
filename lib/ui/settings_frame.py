@@ -1,14 +1,19 @@
 from tkinter import *
 from tkinter import ttk, messagebox
+from datetime import datetime
 from lib.enums import SettingKey
 from lib.constants import APP_NAME
 from lib import stray
 from lib.db import Database, set_setting
 from lib.settings import get_settings
 from lib.crawler import request_crawl
+from lib.scheduler import cancel_all_jobs, register_job
+from lib.utils import time_to_int
 import winreg
 import os
 import sys
+
+recent_crawl_label: Label | None = None
 
 crawling_status_label: Label | None = None
 run_button: Button | None = None
@@ -20,6 +25,8 @@ stray_checkbox_var: BooleanVar | None = None
 stray_checkbox: Checkbutton | None = None
 
 def settings_frame(master: ttk.Notebook):
+    global recent_crawl_label
+
     global crawling_status_label
     global run_button
     global stop_button
@@ -39,9 +46,8 @@ def settings_frame(master: ttk.Notebook):
     crawling_options_labelframe = LabelFrame(settings_frame, text="크롤링 옵션")
     crawling_options_labelframe.pack(padx=5, fill=X)
 
-    recent_crawl_label = Label(crawling_options_labelframe, text="마지막 크롤링 시간: ")
+    recent_crawl_label = Label(crawling_options_labelframe, text="마지막 크롤링 시각 : 로드 중")
     recent_crawl_label.pack(padx=5, pady=1, anchor='w')
-
 
 
     crawl_now_button = Button(crawling_options_labelframe, text="지금 긁어오기", command=crawl_now_handler)
@@ -62,6 +68,7 @@ def settings_frame(master: ttk.Notebook):
     stop_button.pack(side=RIGHT, padx=2, pady=2, fill=X, expand=True)
     stop_button.config(state="disabled")
     
+    set_recent_crawl(settings[SettingKey.RECENT_CRAWL.value])
     set_operation(settings[SettingKey.RECENT_STATUS.value])
 
     # ----------------------------------------------------------------
@@ -91,10 +98,10 @@ def settings_frame(master: ttk.Notebook):
     reset_options_labelframe.pack(padx=5, fill=X)
 
     reset_history_button = Button(reset_options_labelframe, text="기록 초기화", command=lambda: messagebox.showinfo("기록 초기화", "기록이 초기화되었습니다."))
-    reset_history_button.pack(anchor='w', padx=5, pady=1)
+    reset_history_button.pack(fill=X, padx=5, pady=1)
 
-    reset_error_log_button = Button(reset_options_labelframe, text="실패 로그 초기화", command=lambda: messagebox.showinfo("실패 로그 초기화", "실패 로그가 초기화되었습니다."))
-    reset_error_log_button.pack(anchor='w', padx=5, pady=(1, 5))
+    reset_log_button = Button(reset_options_labelframe, text="실패 로그 초기화", command=lambda: messagebox.showinfo("실패 로그 초기화", "실패 로그가 초기화되었습니다."))
+    reset_log_button.pack(fill=X, padx=5, pady=(1, 5))
 
 
 def set_operation(status):
@@ -103,15 +110,30 @@ def set_operation(status):
     global stop_button
 
     if status:
+        settings = get_settings()
+
         crawling_status_label.config(text="실행 중", fg="green")
         set_setting(Database().get_connection(), SettingKey.RECENT_STATUS, True)
         run_button.config(state="disabled")
         stop_button.config(state="normal")
+
+        register_job(request_crawl, time_to_int(settings[SettingKey.INTERVAL.value]))
     else:
         crawling_status_label.config(text="중지됨", fg="red")
         set_setting(Database().get_connection(), SettingKey.RECENT_STATUS, False)
         run_button.config(state="normal")
         stop_button.config(state="disabled")
+
+        cancel_all_jobs()
+
+
+def set_recent_crawl(recent_crawl: datetime):
+    global crawling_status_label
+
+    recent_crawl_str = recent_crawl.strftime("%Y-%m-%d %H:%M:%S")
+
+    recent_crawl_label.config(text=f"마지막 크롤링 시각 : {recent_crawl_str}")
+    set_setting(Database().get_connection(), SettingKey.RECENT_CRAWL, recent_crawl_str)
 
 
 def set_start_onboot(enable: bool):
@@ -178,4 +200,6 @@ def stray_checkbox_click_handler():
 
 
 def crawl_now_handler():
-    request_crawl()
+    if messagebox.askyesno("확인", "지금 긁어오시겠습니까?"):
+        request_crawl()
+        set_recent_crawl(datetime.now())

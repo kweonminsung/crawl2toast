@@ -43,7 +43,7 @@ def get_settings() -> dict[str, str | bool | datetime | time]:
     return settings
 
 
-def get_sources() -> dict[str, dict[str, str | None]]:
+def get_sources() -> dict:
     global sources
 
     return sources

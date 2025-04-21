@@ -2,17 +2,16 @@ from tkinter import *
 from tkinter import ttk, messagebox
 import webbrowser
 from lib.ui.main_frame import main_frame, load_source
-from lib.ui.settings_frame import settings_frame
-from lib.ui.error_logs_frame import error_logs_frame
+from lib.ui.settings_frame import settings_frame, crawl_now_handler
+from lib.ui.logs_frame import logs_frame
 from lib.constants import APP_NAME, CHECK_UPDATE_URL
-from lib.crawler import request_crawl
 
 
 root: Tk | None = None
 
 def set_delete_window_handler(close: bool):
     global root
-    
+
     if close:
         root.protocol("WM_DELETE_WINDOW", root.quit)
     else:
@@ -66,13 +65,9 @@ def initialize():
 
     settings_frame(notebook)
 
-    error_logs_frame(notebook)
+    logs_frame(notebook)
 
     root.mainloop()
-
-
-def crawl_now_handler():
-    if messagebox.askyesno("확인", "지금 긁어오시겠습니까?"):
-        request_crawl()
+        
 
         

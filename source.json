@@ -1,18 +1,18 @@
 {
     "source": [
         {
-            "name": "나무위키 실시간 검색어",
-            "url": "https://namu.wiki/w/%EB%82%98%EB%AC%B4%EC%9C%84%ED%82%A4:%EB%8C%80%EB%AC%B8",
+            "name": "localhost test",
+            "url": "http://localhost:8000/",
             "selector": {
-                "parent": "#app > div.SKx2y5Fn.Wmxy5vAW > div.SBRMLtci.QaSXC569 > div > div.lyqAl8Fe.fwSychkR > div._5m3ZW-J6.XHst3\\+Mq.ufxwWFCg > div > ul",
+                "parent": "body > ul",
                 "child": "li",
-                "crawl_content": "a > span",
+                "crawl_content": "a",
                 "crawl_link": "a"
             },
             "options": {
                 "disable_history": false,
-                "disable_last_history_check": false,
-                "render": true,
+                "disable_last_history_check": true,
+                "render": false,
                 "render_wait": 100
             }
         }

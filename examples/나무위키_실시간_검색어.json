@@ -7,10 +7,10 @@
         "crawl_content": "a > span",
         "crawl_link": "a"
     },
-    "render_options": {
+    "options": {
         "disable_history": false,
         "disable_last_history_check": true,
         "render": true,
-        "wait": 100
+        "render_wait": 100
     }
 }

@@ -4,7 +4,6 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from lib.constants import USER_AGENT, SELUMIUM_DRIVER_TERMINATE_WAIT
-# from lib.settings import get_sources
 from lib.crawler.base import crawl
 
 task_queue = queue.Queue()
@@ -20,16 +19,6 @@ def initialize():
 
 def crawler_thread():
     global selenium_driver
-
-    # Initialize the Selenium driver if any source requires rendering
-    # sources = get_sources()
-    # need_renderer = False
-    # for _url, _source in sources.items():
-    #     if _source["options"]["render"] == True:
-    #         need_renderer = True
-    #         break
-    # if need_renderer:
-    #     initialize_selenium_driver()
 
     # Start the task queue
     while True:
