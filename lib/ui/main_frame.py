@@ -79,7 +79,14 @@ def url_listbox_click_handler(event):
     if new_selected_url == selected_url:
         return
 
-    selected_url = new_selected_url    
+    load_history_listbox(new_selected_url)
+
+
+def load_history_listbox(url: str):
+    global selected_url
+    global history_offset
+
+    selected_url = url    
     history_offset = 0
     history_listbox.delete(0, END)
 
@@ -94,6 +101,15 @@ def url_listbox_click_handler(event):
     for history in histories:
         # history_listbox.insert(END, history)
         history_listbox.insert(END, f"{utils.timestamp_to_datetime(history['timestamp'])} - {history['content']}")
+
+
+def reload_current_history_listbox():
+    global selected_url
+
+    if selected_url is None:
+        return
+
+    load_history_listbox(selected_url)
 
 
 def history_listbox_load_more():

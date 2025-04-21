@@ -4,7 +4,7 @@ from datetime import datetime
 from lib.enums import SettingKey
 from lib.constants import APP_NAME
 from lib import stray
-from lib.db import Database, set_setting
+from lib.db import Database, set_setting, delete_all_histories, delete_all_logs
 from lib.settings import get_settings
 from lib.crawler import request_crawl
 from lib.scheduler import cancel_all_jobs, register_job
@@ -97,10 +97,10 @@ def settings_frame(master: ttk.Notebook):
     reset_options_labelframe = LabelFrame(settings_frame, text="초기화")
     reset_options_labelframe.pack(padx=5, fill=X)
 
-    reset_history_button = Button(reset_options_labelframe, text="기록 초기화", command=lambda: messagebox.showinfo("기록 초기화", "기록이 초기화되었습니다."))
+    reset_history_button = Button(reset_options_labelframe, text="기록 초기화", command=reset_history_handler)
     reset_history_button.pack(fill=X, padx=5, pady=1)
 
-    reset_log_button = Button(reset_options_labelframe, text="실패 로그 초기화", command=lambda: messagebox.showinfo("실패 로그 초기화", "실패 로그가 초기화되었습니다."))
+    reset_log_button = Button(reset_options_labelframe, text="실행 로그 초기화", command=reset_log_handler)
     reset_log_button.pack(fill=X, padx=5, pady=(1, 5))
 
 
@@ -203,3 +203,15 @@ def crawl_now_handler():
     if messagebox.askyesno("확인", "지금 긁어오시겠습니까?"):
         request_crawl()
         set_recent_crawl(datetime.now())
+
+
+def reset_history_handler():
+    if messagebox.askyesno("확인", "기록을 초기화하시겠습니까?"):
+        delete_all_histories(Database().get_connection())
+        messagebox.showinfo("기록 초기화", "기록이 초기화되었습니다.")
+
+
+def reset_log_handler():
+    if messagebox.askyesno("확인", "실행 로그를 초기화하시겠습니까?"):
+        delete_all_logs(Database().get_connection())
+        messagebox.showinfo("실행 로그 초기화", "실행 로그가 초기화되었습니다.")

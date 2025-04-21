@@ -100,6 +100,9 @@ def crawl():
             
             from lib.ui.settings_frame import set_recent_crawl
             set_recent_crawl(datetime.now())
+
+            from lib.ui.main_frame import reload_current_history_listbox
+            reload_current_history_listbox()
         except Exception as e:
             create_log(Database().get_connection(), _url, False, str(e))
             # print(f"Error occurred while crawling: {e}")

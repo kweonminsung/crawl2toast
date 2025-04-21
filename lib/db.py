@@ -129,6 +129,12 @@ def get_histories(conn: Connection, url: str, limit: int, offset: int) -> list[d
     return result
 
 
+def delete_all_histories(conn: Connection) -> None:
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM histories")
+    conn.commit()
+
+
 def get_logs(conn: Connection, limit: int, offset: int) -> list[dict[str, str | None]]:
     cursor = conn.cursor()
     cursor.execute(f"SELECT * FROM logs ORDER BY timestamp DESC LIMIT {limit} OFFSET {offset}")
@@ -150,4 +156,10 @@ def get_logs(conn: Connection, limit: int, offset: int) -> list[dict[str, str | 
 def create_log(conn: Connection, url: str, ok: bool, message: str) -> None:
     cursor = conn.cursor()
     cursor.execute("INSERT INTO logs (url, ok, message) VALUES (?, ?, ?)", (url, str(ok), message))
+    conn.commit()
+
+
+def delete_all_logs(conn: Connection) -> None:
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM logs")
     conn.commit()
