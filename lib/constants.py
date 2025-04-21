@@ -4,7 +4,8 @@ DATABASE_URL = 'data.db'
 
 SOURCES_FILE = 'source.json'
 
-HISTORY_LIMIT = 30
+HISTORY_LOAD_LIMIT = 30
+LOG_LOAD_LIMIT = 50
 
 CHECK_UPDATE_URL = 'https://github.com/kweonminsung'
 

@@ -3,6 +3,7 @@ from sqlite3 import Connection
 from datetime import datetime, time
 from lib.enums import SettingKey
 from lib.constants import DATABASE_URL
+from lib.utils import str_to_bool, timestamp_to_datetime
 from threading import Lock
 
 class Database:
@@ -77,19 +78,16 @@ def get_all_settings(conn: Connection) -> dict[str, str | bool | datetime | time
     cursor.execute("SELECT * FROM settings")
     rows = cursor.fetchall()
 
-    def convert_to_bool(value: str) -> bool:
-        return value.lower() == 'true'
-    
     result = dict()
     for row in rows:
         if row[1] == SettingKey.RECENT_STATUS.value:
-            result[row[1]] = convert_to_bool(row[2])
+            result[row[1]] = str_to_bool(row[2])
         elif row[1] == SettingKey.START_ONBOOT.value:
-            result[row[1]] = convert_to_bool(row[2])
+            result[row[1]] = str_to_bool(row[2])
         elif row[1] == SettingKey.ICONIFY_ONCLOSE.value:
-            result[row[1]] = convert_to_bool(row[2])
+            result[row[1]] = str_to_bool(row[2])
         elif row[1] == SettingKey.STRAY.value:
-            result[row[1]] = convert_to_bool(row[2])
+            result[row[1]] = str_to_bool(row[2])
         elif row[1] == SettingKey.INTERVAL.value:
             result[row[1]] = datetime.strptime(row[2], "%H:%M:%S").time()
         elif row[1] == SettingKey.RECENT_CRAWL.value:
@@ -123,7 +121,7 @@ def get_histories(conn: Connection, url: str, limit: int, offset: int) -> list[d
             "id": row[0],
             "url": row[1],
             "content": row[2],
-            "timestamp": row[3]
+            "timestamp": timestamp_to_datetime(row[3])
         })
 
     return result
@@ -145,9 +143,9 @@ def get_logs(conn: Connection, limit: int, offset: int) -> list[dict[str, str | 
         result.append({
             "id": row[0],
             "url": row[1],
-            "ok": row[2],
+            "ok": str_to_bool(row[2]),
             "message": row[3],
-            "timestamp": row[4]
+            "timestamp": timestamp_to_datetime(row[4])
         })
 
     return result

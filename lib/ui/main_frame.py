@@ -1,8 +1,8 @@
 from tkinter import *
 from tkinter import ttk
-from lib import utils
+from lib.utils import datetime_to_timestamp
 from lib.db import Database, get_histories
-from lib.constants import HISTORY_LIMIT
+from lib.constants import HISTORY_LOAD_LIMIT
 from lib.settings import get_sources, load_sources
 
 history_offset: int = 0
@@ -84,6 +84,7 @@ def url_listbox_click_handler(event):
 
 def load_history_listbox(url: str):
     global selected_url
+    global history_listbox
     global history_offset
 
     selected_url = url    
@@ -96,11 +97,11 @@ def load_history_listbox(url: str):
         history_listbox.insert(END, "이 URL은 기록을 저장하지 않습니다.")
         return
 
-    histories = get_histories(Database().get_connection(), selected_url, HISTORY_LIMIT, history_offset)
+    histories = get_histories(Database().get_connection(), selected_url, HISTORY_LOAD_LIMIT, history_offset)
 
     for history in histories:
         # history_listbox.insert(END, history)
-        history_listbox.insert(END, f"{utils.timestamp_to_datetime(history['timestamp'])} - {history['content']}")
+        history_listbox.insert(END, f"{datetime_to_timestamp(history['timestamp'])} - {history['content']}")
 
 
 def reload_current_history_listbox():
@@ -117,16 +118,16 @@ def history_listbox_load_more():
     global selected_url
     global history_offset
     
-    append_histories = get_histories(Database().get_connection(), selected_url, HISTORY_LIMIT, history_offset + HISTORY_LIMIT)
+    append_histories = get_histories(Database().get_connection(), selected_url, HISTORY_LOAD_LIMIT, history_offset + HISTORY_LOAD_LIMIT)
 
     if len(append_histories) == 0:
         return
 
-    history_offset += HISTORY_LIMIT
+    history_offset += HISTORY_LOAD_LIMIT
 
     for i in range(len(append_histories)):
         # history_listbox.insert(END, append_histories[i])
-        history_listbox.insert(END, f"{utils.timestamp_to_datetime(append_histories[i]['timestamp'])} - {append_histories[i]['content']}")
+        history_listbox.insert(END, f"{datetime_to_timestamp(append_histories[i]['timestamp'])} - {append_histories[i]['content']}")
         
 
 def history_listbox_scrollbar_onscroll_handler(*args):

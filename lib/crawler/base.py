@@ -103,6 +103,10 @@ def crawl():
 
             from lib.ui.main_frame import reload_current_history_listbox
             reload_current_history_listbox()
+
+            from lib.ui.logs_frame import load_log_listbox
+            load_log_listbox()
         except Exception as e:
             create_log(Database().get_connection(), _url, False, str(e))
             # print(f"Error occurred while crawling: {e}")
+    
