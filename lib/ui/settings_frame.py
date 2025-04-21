@@ -5,6 +5,7 @@ from lib.constants import APP_NAME
 from lib import stray
 from lib.db import Database, set_setting
 from lib.settings import get_settings
+from lib.crawler import request_crawl
 import winreg
 import os
 import sys
@@ -38,6 +39,14 @@ def settings_frame(master: ttk.Notebook):
     crawling_options_labelframe = LabelFrame(settings_frame, text="크롤링 옵션")
     crawling_options_labelframe.pack(padx=5, fill=X)
 
+    recent_crawl_label = Label(crawling_options_labelframe, text="마지막 크롤링 시간: ")
+    recent_crawl_label.pack(padx=5, pady=1, anchor='w')
+
+
+
+    crawl_now_button = Button(crawling_options_labelframe, text="지금 긁어오기", command=crawl_now_handler)
+    crawl_now_button.pack(padx=5, pady=2, fill=X, expand=True)
+
 
     crawling_panedwindow = PanedWindow(crawling_options_labelframe, orient=HORIZONTAL, relief=RAISED, borderwidth=2)
     crawling_panedwindow.pack(fill=X, padx=5, pady=5)
@@ -70,8 +79,11 @@ def settings_frame(master: ttk.Notebook):
 
     stray_checkbox_var = BooleanVar(value=settings[SettingKey.STRAY.value])
     stray_checkbox = Checkbutton(system_options_labelframe, text="작업 표시줄에 아이콘 표시", variable=stray_checkbox_var, command=stray_checkbox_click_handler)
-    stray_checkbox.config(state= "disabled" if settings[SettingKey.ICONIFY_ONCLOSE.value] else "normal")
+    stray_checkbox.config(state= "normal" if settings[SettingKey.ICONIFY_ONCLOSE.value] else "disabled")
     stray_checkbox.pack(padx=5, pady=(1, 5), anchor='w')
+
+    if iconify_onclose_checkbox_var.get() and stray_checkbox_var.get():
+        stray.start()
 
     # ----------------------------------------------------------------
 
@@ -144,9 +156,13 @@ def iconify_onclose_checkbox_click_handler():
     if iconify_var:
         set_delete_window_handler(False)
         stray_checkbox.config(state="normal")
+
+        if stray_checkbox_var.get():
+            stray.start()
     else:
         set_delete_window_handler(True)
         stray_checkbox.config(state="disabled")
+
 
 
 def stray_checkbox_click_handler():
@@ -159,3 +175,7 @@ def stray_checkbox_click_handler():
         stray.start()
     else:
         stray.stop()
+
+
+def crawl_now_handler():
+    request_crawl()
