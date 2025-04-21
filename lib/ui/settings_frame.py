@@ -4,8 +4,8 @@ from datetime import datetime
 from lib.enums import SettingKey
 from lib.constants import APP_NAME
 from lib import stray
-from lib.db import Database, set_setting, delete_all_histories, delete_all_logs
-from lib.settings import get_settings
+from lib.db import Database, delete_all_histories, delete_all_logs
+from lib.settings import get_settings, set_setting
 from lib.crawler import request_crawl
 from lib.scheduler import cancel_all_jobs, register_job
 from lib.utils import time_to_int
@@ -15,11 +15,14 @@ import sys
 
 recent_crawl_label: Label | None = None
 
+crawl_interval_var: StringVar | None = None
+apply_interval_button: Button | None = None
+undo_interval_button: Button | None = None
+
 crawling_status_label: Label | None = None
 run_button: Button | None = None
 stop_button: Button | None = None
 
-start_onboot_checkbox_var: BooleanVar | None = None
 iconify_onclose_checkbox_var: BooleanVar | None = None
 stray_checkbox_var: BooleanVar | None = None
 stray_checkbox: Checkbutton | None = None
@@ -27,11 +30,14 @@ stray_checkbox: Checkbutton | None = None
 def settings_frame(master: ttk.Notebook):
     global recent_crawl_label
 
+    global crawl_interval_var
+    global apply_interval_button
+    global undo_interval_button
+
     global crawling_status_label
     global run_button
     global stop_button
 
-    global start_onboot_checkbox_var
     global iconify_onclose_checkbox_var
     global stray_checkbox_var
     global stray_checkbox
@@ -68,10 +74,10 @@ def settings_frame(master: ttk.Notebook):
     interval_buttons_frame = Frame(crawling_options_labelframe)
     interval_buttons_frame.pack(padx=5, pady=2, fill=X, expand=True)
     
-    apply_interval_button = Button(interval_buttons_frame, text="적용", width=15, command=lambda: apply_crawl_interval_button_handler(crawl_interval_var.get()))
+    apply_interval_button = Button(interval_buttons_frame, text="적용", width=15, command=apply_crawl_interval_button_handler)
     apply_interval_button.pack(side=LEFT, padx=2, pady=2, fill=X, expand=True)
 
-    undo_interval_button = Button(interval_buttons_frame, text="되돌리기", width=15, command=lambda: crawl_interval_var.set(settings[SettingKey.INTERVAL.value]))
+    undo_interval_button = Button(interval_buttons_frame, text="되돌리기", width=15, command=undo_crawl_interval_button_handler)
     undo_interval_button.pack(side=RIGHT, padx=2, pady=2, fill=X, expand=True)
 
     # ----------------------------------------------------------------
@@ -106,7 +112,7 @@ def settings_frame(master: ttk.Notebook):
     system_options_labelframe.pack(padx=5, fill=X)
 
     start_onboot_checkbox_var = BooleanVar(value=settings[SettingKey.START_ONBOOT.value])
-    start_onboot_checkbox = Checkbutton(system_options_labelframe, text="윈도우 시작 시 실행", variable=start_onboot_checkbox_var, command=start_onboot_checkbox_click_handler)
+    start_onboot_checkbox = Checkbutton(system_options_labelframe, text="윈도우 시작 시 실행", variable=start_onboot_checkbox_var, command=lambda: set_start_onboot(start_onboot_checkbox_var.get()))
     start_onboot_checkbox.pack(padx=5, pady=1, anchor='w')
 
     iconify_onclose_checkbox_var = BooleanVar(value=settings[SettingKey.ICONIFY_ONCLOSE.value])
@@ -142,16 +148,26 @@ def set_operation(status):
         settings = get_settings()
 
         crawling_status_label.config(text="실행 중", fg="green")
-        set_setting(Database().get_connection(), SettingKey.RECENT_STATUS, True)
+
+        set_setting(SettingKey.RECENT_STATUS, True)
+
         run_button.config(state="disabled")
         stop_button.config(state="normal")
+
+        apply_interval_button.config(state="disabled")
+        undo_interval_button.config(state="disabled")
 
         register_job(request_crawl, time_to_int(settings[SettingKey.INTERVAL.value]))
     else:
         crawling_status_label.config(text="중지됨", fg="red")
-        set_setting(Database().get_connection(), SettingKey.RECENT_STATUS, False)
+
+        set_setting(SettingKey.RECENT_STATUS, False)
+        
         run_button.config(state="normal")
         stop_button.config(state="disabled")
+
+        apply_interval_button.config(state="normal")
+        undo_interval_button.config(state="normal")
 
         cancel_all_jobs()
 
@@ -162,17 +178,32 @@ def set_recent_crawl(recent_crawl: datetime):
     recent_crawl_str = recent_crawl.strftime("%Y-%m-%d %H:%M:%S")
 
     recent_crawl_label.config(text=f"마지막 크롤링 시각 : {recent_crawl_str}")
-    set_setting(Database().get_connection(), SettingKey.RECENT_CRAWL, recent_crawl_str)
+
+    set_setting(SettingKey.RECENT_CRAWL, recent_crawl_str)
 
 
-def apply_crawl_interval_button_handler(interval: str):
+def apply_crawl_interval_button_handler():
+    global crawl_interval_var
+
+    interval = crawl_interval_var.get()
+
     try:
         # Validate the input format(HH:mm:ss)
-        datetime.strptime(interval, "%H:%M:%S").time()
-        set_setting(Database().get_connection(), SettingKey.INTERVAL, interval)
+        datetime.strptime(interval, "%H:%M:%S")
+        
+        set_setting(SettingKey.INTERVAL, interval)
+
         messagebox.showinfo("크롤링 주기 설정", f"크롤링 주기가 {interval}로 설정되었습니다.")
     except ValueError:
         messagebox.showerror("오류", "올바른 HH:mm:ss 형식으로 입력해주세요.")
+
+
+def undo_crawl_interval_button_handler():
+    global crawl_interval_var
+
+    settings = get_settings()
+
+    crawl_interval_var.set(settings[SettingKey.INTERVAL.value])
 
 
 def set_start_onboot(enable: bool):
@@ -191,14 +222,10 @@ def set_start_onboot(enable: bool):
     winreg.CloseKey(key)
 
 
-def start_onboot_checkbox_click_handler():
-    global start_onboot_checkbox_var
+def set_start_onboot(start_onboot: bool):
+    set_setting(SettingKey.START_ONBOOT, start_onboot)
 
-    start_onboot_var = start_onboot_checkbox_var.get()
-
-    set_setting(Database().get_connection(), SettingKey.START_ONBOOT, start_onboot_var)
-
-    if start_onboot_var:
+    if start_onboot:
         set_start_onboot(True)
     else:
         set_start_onboot(False)
@@ -212,7 +239,8 @@ def iconify_onclose_checkbox_click_handler():
     global stray_checkbox
 
     iconify_var = iconify_onclose_checkbox_var.get()
-    set_setting(Database().get_connection(), SettingKey.ICONIFY_ONCLOSE, iconify_var)
+
+    set_setting(SettingKey.ICONIFY_ONCLOSE, iconify_var)
 
     if iconify_var:
         set_delete_window_handler(False)
@@ -230,7 +258,8 @@ def stray_checkbox_click_handler():
     global stray_checkbox_var
 
     stray_var = stray_checkbox_var.get()
-    set_setting(Database().get_connection(), SettingKey.STRAY, stray_var)
+    
+    set_setting(SettingKey.STRAY, stray_var)
 
     if stray_var:
         stray.start()

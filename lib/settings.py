@@ -1,6 +1,7 @@
 import json
 from datetime import datetime, time
 from lib.constants import SOURCES_FILE
+from lib.enums import SettingKey
 
 settings: dict[str, str | bool | datetime | time] | None = None
 sources: dict | None = None
@@ -37,10 +38,19 @@ def load_sources():
         raise Exception("Error decoding JSON from sources file.")
     
 
-def get_settings() -> dict[str, str | bool | datetime | time]:
+def get_settings() -> dict[SettingKey, str | bool | datetime | time]:
     global settings
 
     return settings
+
+
+def set_setting(key: SettingKey, value: str | bool | datetime | time) -> None:
+    from lib.db import Database, set_setting as set_setting_db
+
+    global settings
+
+    settings[key] = value
+    set_setting_db(Database().get_connection(), key, value)
 
 
 def get_sources() -> dict:
