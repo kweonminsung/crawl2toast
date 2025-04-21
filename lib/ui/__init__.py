@@ -41,7 +41,7 @@ def initialize():
     menubar = Menu(root)
 
     menu1 = Menu(menubar, tearoff=0)
-    menu1.add_command(label='도움말', command=lambda: messagebox.showinfo(APP_NAME, "추후 업데이트 예정입니다."))
+    menu1.add_command(label='도움말', command=lambda: messagebox.showinfo("도움말", "추후 업데이트 예정입니다."))
     menu1.add_command(label='업데이트 확인', command=lambda: webbrowser.open(CHECK_UPDATE_URL))
     menu1.add_command(label='종료', command=root.quit)
     menubar.add_cascade(label='파일', menu=menu1)

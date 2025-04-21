@@ -49,13 +49,42 @@ def settings_frame(master: ttk.Notebook):
     recent_crawl_label = Label(crawling_options_labelframe, text="마지막 크롤링 시각 : 로드 중")
     recent_crawl_label.pack(padx=5, pady=1, anchor='w')
 
-
     crawl_now_button = Button(crawling_options_labelframe, text="지금 긁어오기", command=crawl_now_handler)
     crawl_now_button.pack(padx=5, pady=2, fill=X, expand=True)
 
+    # ----------------------------------------------------------------
+    sp1 = ttk.Separator(crawling_options_labelframe, orient='horizontal')
+    sp1.pack(fill=X, padx=5, pady=5)
+    # ----------------------------------------------------------------
+
+    crawl_interval_label = Label(crawling_options_labelframe, text="크롤링 주기 설정 (HH:mm:ss 형식으로 입력)")
+    crawl_interval_label.pack(padx=5, pady=1, anchor='w')
+
+
+    crawl_interval_var = StringVar(value=settings[SettingKey.INTERVAL.value])
+    crawl_interval_entry = Entry(crawling_options_labelframe, textvariable=crawl_interval_var, width=10)
+    crawl_interval_entry.pack(padx=5, pady=2)
+
+    interval_buttons_frame = Frame(crawling_options_labelframe)
+    interval_buttons_frame.pack(padx=5, pady=2, fill=X, expand=True)
+    
+    apply_interval_button = Button(interval_buttons_frame, text="적용", width=15, command=lambda: apply_crawl_interval_button_handler(crawl_interval_var.get()))
+    apply_interval_button.pack(side=LEFT, padx=2, pady=2, fill=X, expand=True)
+
+    undo_interval_button = Button(interval_buttons_frame, text="되돌리기", width=15, command=lambda: crawl_interval_var.set(settings[SettingKey.INTERVAL.value]))
+    undo_interval_button.pack(side=RIGHT, padx=2, pady=2, fill=X, expand=True)
+
+    # ----------------------------------------------------------------
+    sp2 = ttk.Separator(crawling_options_labelframe, orient='horizontal')
+    sp2.pack(fill=X, padx=5, pady=5)
+    # ----------------------------------------------------------------
+
+    crawling_panedwindow_label = Label(crawling_options_labelframe, text="크롤링 상태", width=10)
+    crawling_panedwindow_label.pack(padx=5, pady=1, anchor='w')
+
 
     crawling_panedwindow = PanedWindow(crawling_options_labelframe, orient=HORIZONTAL, relief=RAISED, borderwidth=2)
-    crawling_panedwindow.pack(fill=X, padx=5, pady=5)
+    crawling_panedwindow.pack(fill=X, padx=5, pady=(2, 5))
 
     crawling_status_label = Label(crawling_panedwindow, text="로드 중", fg="orange", width=10)
     crawling_status_label.pack(side=LEFT, padx=2, fill=X, expand=True)
@@ -136,6 +165,16 @@ def set_recent_crawl(recent_crawl: datetime):
     set_setting(Database().get_connection(), SettingKey.RECENT_CRAWL, recent_crawl_str)
 
 
+def apply_crawl_interval_button_handler(interval: str):
+    try:
+        # Validate the input format(HH:mm:ss)
+        datetime.strptime(interval, "%H:%M:%S").time()
+        set_setting(Database().get_connection(), SettingKey.INTERVAL, interval)
+        messagebox.showinfo("크롤링 주기 설정", f"크롤링 주기가 {interval}로 설정되었습니다.")
+    except ValueError:
+        messagebox.showerror("오류", "올바른 HH:mm:ss 형식으로 입력해주세요.")
+
+
 def set_start_onboot(enable: bool):
     key = winreg.OpenKey(
         winreg.HKEY_CURRENT_USER,
@@ -208,6 +247,9 @@ def crawl_now_handler():
 def reset_history_handler():
     if messagebox.askyesno("확인", "기록을 초기화하시겠습니까?"):
         delete_all_histories(Database().get_connection())
+
+        from lib.ui.main_frame import reload_current_history_listbox
+        reload_current_history_listbox()
         messagebox.showinfo("기록 초기화", "기록이 초기화되었습니다.")
 
 
