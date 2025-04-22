@@ -7,12 +7,8 @@ settings: dict[str, str | bool | datetime | time] | None = None
 sources: dict | None = None
 
 def initialize():
-    from lib.db import Database, get_all_settings
-
-    global settings
-    
     # Load settings from db
-    settings = get_all_settings(Database().get_connection())
+    load_settings()
     print("Settings loaded successfully.")
 
     # Load sources from JSON file
@@ -38,6 +34,14 @@ def load_sources():
         raise Exception("Error decoding JSON from sources file.")
     
 
+def load_settings() -> None:
+    from lib.db import Database, get_all_settings
+
+    global settings
+
+    settings = get_all_settings(Database().get_connection())
+
+
 def get_settings() -> dict[SettingKey, str | bool | datetime | time]:
     global settings
 
@@ -47,10 +51,9 @@ def get_settings() -> dict[SettingKey, str | bool | datetime | time]:
 def set_setting(key: SettingKey, value: str | bool | datetime | time) -> None:
     from lib.db import Database, set_setting as set_setting_db
 
-    global settings
-
-    settings[key] = value
     set_setting_db(Database().get_connection(), key, value)
+    
+    load_settings()
 
 
 def get_sources() -> dict:

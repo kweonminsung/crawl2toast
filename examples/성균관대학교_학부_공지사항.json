@@ -1,16 +1,20 @@
 {
-    "name": "성균관대학교 학부 공지사항",
-    "url": "https://cse.skku.edu/cse/notice.do",
-    "selector": {
-        "parent": "#jwxe_main_content > div > div > div.board-name-list.board-wrap > ul",
-        "child": "li",
-        "crawl_content": "dl > dt > a",
-        "crawl_link": "dl > dt > a"
-    },
-    "options": {
-        "disable_history": false,
-        "disable_last_history_check": false,
-        "render": false,
-        "render_wait": 1000
-    }
+    "source": [
+        {
+            "name": "성균관대학교 학부 공지사항",
+            "url": "https://cse.skku.edu/cse/notice.do",
+            "selector": {
+                "parent": "#jwxe_main_content > div > div > div.board-name-list.board-wrap > ul",
+                "child": "li",
+                "crawl_content": "dl > dt > a",
+                "crawl_link": "dl > dt > a"
+            },
+            "options": {
+                "disable_history": false,
+                "disable_last_history_check": false,
+                "render": false,
+                "render_wait": 1000
+            }
+        }
+    ]
 }

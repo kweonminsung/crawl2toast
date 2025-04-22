@@ -3,7 +3,6 @@ from tkinter import ttk, messagebox
 from datetime import datetime
 from lib.enums import SettingKey
 from lib.constants import APP_NAME
-from lib import stray
 from lib.db import Database, delete_all_histories, delete_all_logs
 from lib.settings import get_settings, set_setting
 from lib.crawler import request_crawl
@@ -28,6 +27,9 @@ stray_checkbox_var: BooleanVar | None = None
 stray_checkbox: Checkbutton | None = None
 
 def settings_frame(master: ttk.Notebook):
+    from lib.ui import set_iconify_ondeletewindow_handler
+    from lib.stray import start_stray
+
     global recent_crawl_label
 
     global crawl_interval_var
@@ -124,8 +126,10 @@ def settings_frame(master: ttk.Notebook):
     stray_checkbox.config(state= "normal" if settings[SettingKey.ICONIFY_ONCLOSE.value] else "disabled")
     stray_checkbox.pack(padx=5, pady=(1, 5), anchor='w')
 
+    set_iconify_ondeletewindow_handler(iconify_onclose_checkbox_var.get())
+
     if iconify_onclose_checkbox_var.get() and stray_checkbox_var.get():
-        stray.start()
+        start_stray()
 
     # ----------------------------------------------------------------
 
@@ -232,7 +236,8 @@ def set_start_onboot(start_onboot: bool):
 
 
 def iconify_onclose_checkbox_click_handler():
-    from lib.ui import set_delete_window_handler
+    from lib.ui import set_iconify_ondeletewindow_handler
+    from lib.stray import start_stray
 
     global iconify_onclose_checkbox_var
     global stray_checkbox_var
@@ -243,18 +248,20 @@ def iconify_onclose_checkbox_click_handler():
     set_setting(SettingKey.ICONIFY_ONCLOSE, iconify_var)
 
     if iconify_var:
-        set_delete_window_handler(False)
+        set_iconify_ondeletewindow_handler(True)
         stray_checkbox.config(state="normal")
 
         if stray_checkbox_var.get():
-            stray.start()
+            start_stray()
     else:
-        set_delete_window_handler(True)
+        set_iconify_ondeletewindow_handler(False)
         stray_checkbox.config(state="disabled")
 
 
 
 def stray_checkbox_click_handler():
+    from lib.stray import start_stray, stop_stray
+    
     global stray_checkbox_var
 
     stray_var = stray_checkbox_var.get()
@@ -262,9 +269,9 @@ def stray_checkbox_click_handler():
     set_setting(SettingKey.STRAY, stray_var)
 
     if stray_var:
-        stray.start()
+        start_stray()
     else:
-        stray.stop()
+        stop_stray()
 
 
 def crawl_now_handler():

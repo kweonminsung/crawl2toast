@@ -3,6 +3,7 @@ import pystray
 import threading
 from PIL import Image
 import os
+from lib.utils import get_path
 from lib.constants import APP_NAME
 
 icon = None
@@ -14,7 +15,7 @@ def initialize():
 
     global icon
 
-    image = Image.open("public/icon.ico")
+    image = Image.open(get_path("public/icon.ico"))
     menu = (item('지금 긁어오기', crawl_now_handler), item('설정 열기', deiconify), item('종료', exit_application))
 
     icon = pystray.Icon(APP_NAME, image, APP_NAME, menu)
@@ -28,7 +29,7 @@ def exit_application():
     os._exit(0)
 
 
-def start():
+def start_stray():
     global icon
 
     with icon_lock:
@@ -39,7 +40,7 @@ def start():
             stray_thread.start()
 
 
-def stop():
+def stop_stray():
     global icon
 
     with icon_lock:

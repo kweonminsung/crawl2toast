@@ -2,9 +2,11 @@ import threading
 import queue
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
-from webdriver_manager.chrome import ChromeDriverManager
+# from webdriver_manager.chrome import ChromeDriverManager
 from lib.constants import USER_AGENT, SELUMIUM_DRIVER_TERMINATE_WAIT
 from lib.crawler.base import crawl
+from lib.utils import get_path
+import os
 
 task_queue = queue.Queue()
 
@@ -59,7 +61,7 @@ def initialize_selenium_driver():
     global selenium_driver
 
     options = webdriver.ChromeOptions()
-    options.add_argument('--headless')
+    # options.add_argument('--headless')
     options.add_argument('--no-sandbox')
     options.add_argument('--disable-dev-shm-usage')
     options.add_argument('--disable-extensions')
@@ -69,7 +71,10 @@ def initialize_selenium_driver():
     
     options.add_experimental_option('excludeSwitches', ['enable-logging'])
 
-    selenium_driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+    # selenium_driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+
+    chromedriver_path = get_path(os.path.join(os.path.dirname(__file__), "chromedriver.exe"), "chromedriver.exe")
+    selenium_driver = webdriver.Chrome(service=Service(chromedriver_path), options=options)
 
 
 def get_selenium_driver() -> webdriver.Chrome:

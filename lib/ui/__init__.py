@@ -4,18 +4,19 @@ import webbrowser
 from lib.ui.main_frame import main_frame, load_source
 from lib.ui.settings_frame import settings_frame, crawl_now_handler
 from lib.ui.logs_frame import logs_frame
+from lib.utils import get_path
 from lib.constants import APP_NAME, CHECK_UPDATE_URL
 
 
 root: Tk | None = None
 
-def set_delete_window_handler(close: bool):
+def set_iconify_ondeletewindow_handler(iconfiy: bool):
     global root
 
-    if close:
-        root.protocol("WM_DELETE_WINDOW", root.quit)
-    else:
+    if iconfiy:
         root.protocol("WM_DELETE_WINDOW", root.iconify)
+    else:
+        root.protocol("WM_DELETE_WINDOW", root.quit)
 
 
 def deiconify():
@@ -31,7 +32,8 @@ def initialize():
 
     root = Tk()
     root.title(APP_NAME)
-    root.iconbitmap('public/icon.ico')
+
+    root.iconbitmap(get_path("public/icon.ico"))
     root.geometry('400x600')
     root.attributes('-fullscreen', False)
     root.resizable(False, False)
@@ -68,6 +70,5 @@ def initialize():
     logs_frame(notebook)
 
     root.mainloop()
-        
 
         

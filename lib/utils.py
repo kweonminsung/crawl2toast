@@ -1,8 +1,10 @@
 from datetime import datetime, time
+import os
+import sys
+
 
 def timestamp_to_datetime(timestamp: str) -> datetime:
     return datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S")
-    # return datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S")
 
 
 def datetime_to_timestamp(_datetime: datetime) -> str:
@@ -15,3 +17,12 @@ def time_to_int(_time: time) -> int:
 
 def str_to_bool(value: str) -> bool:
         return value.lower() == 'true'
+
+# Import from the bundled directory
+def get_path(path: str, bundle_path: str | None = None) -> str:
+    if getattr(sys, 'frozen', False): 
+        if bundle_path is None:
+            bundle_path = path
+        return os.path.join(sys._MEIPASS, bundle_path)
+    else:
+        return path

@@ -1,16 +1,20 @@
 {
-    "name": "localhost test",
-    "url": "http://localhost:8000/",
-    "selector": {
-        "parent": "body > ul",
-        "child": "li",
-        "crawl_content": "a",
-        "crawl_link": "a"
-    },
-    "options": {
-        "disable_history": false,
-        "disable_last_history_check": true,
-        "render": false,
-        "render_wait": 100
-    }
+    "source": [
+        {
+            "name": "localhost test",
+            "url": "http://localhost:8000/",
+            "selector": {
+                "parent": "body > ul",
+                "child": "li",
+                "crawl_content": "a",
+                "crawl_link": "a"
+            },
+            "options": {
+                "disable_history": false,
+                "disable_last_history_check": true,
+                "render": false,
+                "render_wait": 100
+            }
+        }
+    ]
 }

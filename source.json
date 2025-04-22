@@ -1,19 +1,19 @@
 {
     "source": [
         {
-            "name": "localhost test",
-            "url": "http://localhost:8000/",
+            "name": "성균관대학교 소프트웨어학과 공지사항",
+            "url": "https://cse.skku.edu/cse/notice.do?mode=list&&articleLimit=10&article.offset=10",
             "selector": {
-                "parent": "body > ul",
+                "parent": "#jwxe_main_content > div > div > div.board-name-list.board-wrap > ul",
                 "child": "li",
-                "crawl_content": "a",
-                "crawl_link": "a"
+                "crawl_content": "dl > dt > a",
+                "crawl_link": "dl > dt > a"
             },
             "options": {
                 "disable_history": false,
-                "disable_last_history_check": true,
+                "disable_last_history_check": false,
                 "render": false,
-                "render_wait": 100
+                "render_wait": 1000
             }
         }
     ]

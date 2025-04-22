@@ -1,0 +1,33 @@
+{
+    // Source of the website to crawl
+    "source": [
+        {
+            // Name for identification
+            "name": "Sungkyunkwan University Software Department Notices",
+            // URL to crawl
+            "url": "https://cse.skku.edu/cse/notice.do?mode=list&&articleLimit=10&article.offset=10",
+            // HTML selectors for crawling
+            // parent: Selector for the tag wrapping the list of notices
+            // child: Tag for each list item
+            // crawl_content: Selector for the tag to crawl (relative to the list)
+            // crawl_link: (Optional) Selector for the anchor tag (a) to navigate when clicking a notification (relative to the list)
+            "selector": {
+                "parent": "#jwxe_main_content > div > div > div.board-name-list.board-wrap > ul",
+                "child": "li",
+                "crawl_content": "dl > dt > a",
+                "crawl_link": "dl > dt > a"
+            },
+            // Additional options
+            // disable_history: (Optional) If set to true, disables crawling history (default: false)
+            // disable_last_history_check: (Optional) If set to true, crawls all items regardless of the last record (default: false)
+            // render: (Optional) If set to true, renders HTML and JS before crawling (default: false)
+            // render_(Optional) wait: Time to wait before crawling after rendering (unit: ms, default: 1000)
+            "options": {
+                "disable_history": false,
+                "disable_last_history_check": false,
+                "render": false,
+                "render_wait": 1000
+            }
+        }
+    ]
+}

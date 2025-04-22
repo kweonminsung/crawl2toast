@@ -1,0 +1,33 @@
+{
+    // 긁어올 사이트의 소스
+    "source": [
+        {
+            // 구분을 위한 이름
+            "name": "성균관대학교 소프트웨어학과 공지사항",
+            // 긁어올 URL
+            "url": "https://cse.skku.edu/cse/notice.do?mode=list&&articleLimit=10&article.offset=10",
+            // 긁어올 HTML의 selector
+            // parent: 공지사항 리스트를 감싸고 있는 태그의 selector
+            // child: 리스트 아이템의 태그
+            // crawl_content: 긁어올 태그의 selector (list에 상대적인 selector)
+            // crawl_link: (선택) 알림 클릭 시 이동할 URL의 a 태그의 selector (list에 상대적인 selector)
+            "selector": {
+                "parent": "#jwxe_main_content > div > div > div.board-name-list.board-wrap > ul",
+                "child": "li",
+                "crawl_content": "dl > dt > a",
+                "crawl_link": "dl > dt > a"
+            },
+            // 기타 옵션
+            // disable_history: (선택) true로 설정 시 크롤링 기록을 끔 (기본값: false)
+            // disable_last_history_check: (선택) true로 설정 시 마지막 기록과 관련 없이 모두 긁어옴 (기본값: false)
+            // render: (선택) true로 설정 시 HTML 및 JS를 렌더링한 후에 긁어옴 (기본값: false)
+            // render_wait: (선택) 렌더링 후 긁어오기 전 대기할 시간 (단위: ms, 기본값: 1000)
+            "options": {
+                "disable_history": false,
+                "disable_last_history_check": false,
+                "render": false,
+                "render_wait": 1000
+            }
+        }
+    ]
+}
