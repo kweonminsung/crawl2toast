@@ -8,6 +8,7 @@ from lib.settings import get_settings, set_setting
 from lib.crawler import request_crawl
 from lib.scheduler import cancel_all_jobs, register_job
 from lib.utils import time_to_int
+from lib.i18n import t
 import winreg
 import os
 import sys
@@ -47,17 +48,17 @@ def settings_frame(master: ttk.Notebook):
     settings = get_settings()
 
     settings_frame = Frame(master)
-    master.add(settings_frame, text='설정')
+    master.add(settings_frame, text=t('ui.notebook.settings.title'))
 
     # ----------------------------------------------------------------
 
-    crawling_options_labelframe = LabelFrame(settings_frame, text="크롤링 옵션")
+    crawling_options_labelframe = LabelFrame(settings_frame, text=t('ui.notebook.settings.crawling_options.title'))
     crawling_options_labelframe.pack(padx=5, fill=X)
 
-    recent_crawl_label = Label(crawling_options_labelframe, text="마지막 크롤링 시각 : 로드 중")
+    recent_crawl_label = Label(crawling_options_labelframe, text=f"{t('ui.notebook.settings.crawling_options.recent_crawl.title')} : {t('ui.notebook.settings.crawling_options.recent_crawl.loading')}")
     recent_crawl_label.pack(padx=5, pady=1, anchor='w')
 
-    crawl_now_button = Button(crawling_options_labelframe, text="지금 긁어오기", command=crawl_now_handler)
+    crawl_now_button = Button(crawling_options_labelframe, text=t('ui.notebook.settings.crawling_options.recent_crawl.crawl_now'), command=crawl_now_handler)
     crawl_now_button.pack(padx=5, pady=2, fill=X, expand=True)
 
     # ----------------------------------------------------------------
@@ -65,7 +66,7 @@ def settings_frame(master: ttk.Notebook):
     sp1.pack(fill=X, padx=5, pady=5)
     # ----------------------------------------------------------------
 
-    crawl_interval_label = Label(crawling_options_labelframe, text="크롤링 주기 설정 (HH:mm:ss 형식으로 입력)")
+    crawl_interval_label = Label(crawling_options_labelframe, text=t('ui.notebook.settings.crawling_options.crawl_interval.title'))
     crawl_interval_label.pack(padx=5, pady=1, anchor='w')
 
 
@@ -76,10 +77,10 @@ def settings_frame(master: ttk.Notebook):
     interval_buttons_frame = Frame(crawling_options_labelframe)
     interval_buttons_frame.pack(padx=5, pady=2, fill=X, expand=True)
     
-    apply_interval_button = Button(interval_buttons_frame, text="적용", width=15, command=apply_crawl_interval_button_handler)
+    apply_interval_button = Button(interval_buttons_frame, text=t('ui.notebook.settings.crawling_options.crawl_interval.apply_interval'), width=15, command=apply_crawl_interval_button_handler)
     apply_interval_button.pack(side=LEFT, padx=2, pady=2, fill=X, expand=True)
 
-    undo_interval_button = Button(interval_buttons_frame, text="되돌리기", width=15, command=undo_crawl_interval_button_handler)
+    undo_interval_button = Button(interval_buttons_frame, text=t('ui.notebook.settings.crawling_options.crawl_interval.undo_interval'), width=15, command=undo_crawl_interval_button_handler)
     undo_interval_button.pack(side=RIGHT, padx=2, pady=2, fill=X, expand=True)
 
     # ----------------------------------------------------------------
@@ -87,42 +88,42 @@ def settings_frame(master: ttk.Notebook):
     sp2.pack(fill=X, padx=5, pady=5)
     # ----------------------------------------------------------------
 
-    crawling_panedwindow_label = Label(crawling_options_labelframe, text="크롤링 상태", width=10)
+    crawling_panedwindow_label = Label(crawling_options_labelframe, text=t('ui.notebook.settings.crawling_options.crawling_status.title'), width=10)
     crawling_panedwindow_label.pack(padx=5, pady=1, anchor='w')
 
 
     crawling_panedwindow = PanedWindow(crawling_options_labelframe, orient=HORIZONTAL, relief=RAISED, borderwidth=2)
     crawling_panedwindow.pack(fill=X, padx=5, pady=(2, 5))
 
-    crawling_status_label = Label(crawling_panedwindow, text="로드 중", fg="orange", width=10)
+    crawling_status_label = Label(crawling_panedwindow, text=t('ui.notebook.settings.crawling_options.crawling_status.loading'), fg="orange", width=10)
     crawling_status_label.pack(side=LEFT, padx=2, fill=X, expand=True)
     
-    run_button = Button(crawling_panedwindow, text="실행", command=lambda: set_operation(True))
+    run_button = Button(crawling_panedwindow, text=t('ui.notebook.settings.crawling_options.crawling_status.run'), command=lambda: set_crawling_status(True))
     run_button.pack(side=LEFT, padx=2, pady=2, fill=X, expand=True)
     run_button.config(state="disabled")
 
-    stop_button = Button(crawling_panedwindow, text="중지", command=lambda: set_operation(False))
+    stop_button = Button(crawling_panedwindow, text=t('ui.notebook.settings.crawling_options.crawling_status.stop'), command=lambda: set_crawling_status(False))
     stop_button.pack(side=RIGHT, padx=2, pady=2, fill=X, expand=True)
     stop_button.config(state="disabled")
     
     set_recent_crawl(settings[SettingKey.RECENT_CRAWL.value])
-    set_operation(settings[SettingKey.RECENT_STATUS.value])
+    set_crawling_status(settings[SettingKey.RECENT_STATUS.value])
 
     # ----------------------------------------------------------------
 
-    system_options_labelframe = LabelFrame(settings_frame, text="시스템 옵션")
+    system_options_labelframe = LabelFrame(settings_frame, text=t('ui.notebook.settings.crawling_options.system_options.title'))
     system_options_labelframe.pack(padx=5, fill=X)
 
     start_onboot_checkbox_var = BooleanVar(value=settings[SettingKey.START_ONBOOT.value])
-    start_onboot_checkbox = Checkbutton(system_options_labelframe, text="윈도우 시작 시 실행", variable=start_onboot_checkbox_var, command=lambda: set_start_onboot(start_onboot_checkbox_var.get()))
+    start_onboot_checkbox = Checkbutton(system_options_labelframe, text=t('ui.notebook.settings.crawling_options.system_options.start_onboot'), variable=start_onboot_checkbox_var, command=lambda: set_start_onboot(start_onboot_checkbox_var.get()))
     start_onboot_checkbox.pack(padx=5, pady=1, anchor='w')
 
     iconify_onclose_checkbox_var = BooleanVar(value=settings[SettingKey.ICONIFY_ONCLOSE.value])
-    iconify_onclose_checkbox = Checkbutton(system_options_labelframe, text="X 버튼 클릭 시 창 최소화", variable=iconify_onclose_checkbox_var, command=iconify_onclose_checkbox_click_handler)
+    iconify_onclose_checkbox = Checkbutton(system_options_labelframe, text=t('ui.notebook.settings.crawling_options.system_options.iconify_onclose'), variable=iconify_onclose_checkbox_var, command=iconify_onclose_checkbox_click_handler)
     iconify_onclose_checkbox.pack(padx=5, pady=1, anchor='w')
 
     stray_checkbox_var = BooleanVar(value=settings[SettingKey.STRAY.value])
-    stray_checkbox = Checkbutton(system_options_labelframe, text="작업 표시줄에 아이콘 표시", variable=stray_checkbox_var, command=stray_checkbox_click_handler)
+    stray_checkbox = Checkbutton(system_options_labelframe, text=t('ui.notebook.settings.crawling_options.system_options.stray'), variable=stray_checkbox_var, command=stray_checkbox_click_handler)
     stray_checkbox.config(state= "normal" if settings[SettingKey.ICONIFY_ONCLOSE.value] else "disabled")
     stray_checkbox.pack(padx=5, pady=(1, 5), anchor='w')
 
@@ -133,17 +134,17 @@ def settings_frame(master: ttk.Notebook):
 
     # ----------------------------------------------------------------
 
-    reset_options_labelframe = LabelFrame(settings_frame, text="초기화")
+    reset_options_labelframe = LabelFrame(settings_frame, text=t('ui.notebook.settings.crawling_options.reset_options.title'))
     reset_options_labelframe.pack(padx=5, fill=X)
 
-    reset_history_button = Button(reset_options_labelframe, text="기록 초기화", command=reset_history_handler)
+    reset_history_button = Button(reset_options_labelframe, text=t('ui.notebook.settings.crawling_options.reset_options.reset_history'), command=reset_history_handler)
     reset_history_button.pack(fill=X, padx=5, pady=1)
 
-    reset_log_button = Button(reset_options_labelframe, text="실행 로그 초기화", command=reset_log_handler)
+    reset_log_button = Button(reset_options_labelframe, text=t('ui.notebook.settings.crawling_options.reset_options.reset_log'), command=reset_log_handler)
     reset_log_button.pack(fill=X, padx=5, pady=(1, 5))
 
 
-def set_operation(status):
+def set_crawling_status(status):
     global crawling_status_label
     global run_button
     global stop_button
@@ -151,7 +152,7 @@ def set_operation(status):
     if status:
         settings = get_settings()
 
-        crawling_status_label.config(text="실행 중", fg="green")
+        crawling_status_label.config(text=t('ui.notebook.settings.crawling_options.crawling_status.running'), fg="green")
 
         set_setting(SettingKey.RECENT_STATUS, True)
 
@@ -163,7 +164,7 @@ def set_operation(status):
 
         register_job(request_crawl, time_to_int(settings[SettingKey.INTERVAL.value]))
     else:
-        crawling_status_label.config(text="중지됨", fg="red")
+        crawling_status_label.config(text=t('ui.notebook.settings.crawling_options.crawling_status.stopped'), fg="red")
 
         set_setting(SettingKey.RECENT_STATUS, False)
         
@@ -181,7 +182,7 @@ def set_recent_crawl(recent_crawl: datetime):
 
     recent_crawl_str = recent_crawl.strftime("%Y-%m-%d %H:%M:%S")
 
-    recent_crawl_label.config(text=f"마지막 크롤링 시각 : {recent_crawl_str}")
+    recent_crawl_label.config(text=f"{t('ui.notebook.settings.crawling_options.recent_crawl.title')} : {recent_crawl_str}")
 
     set_setting(SettingKey.RECENT_CRAWL, recent_crawl_str)
 
@@ -197,9 +198,9 @@ def apply_crawl_interval_button_handler():
         
         set_setting(SettingKey.INTERVAL, interval)
 
-        messagebox.showinfo("정보", f"크롤링 주기가 {interval}로 설정되었습니다.")
+        messagebox.showinfo(t('message.title.info'), t('ui.notebook.settings.crawling_options.crawl_interval.message.applied'))
     except ValueError:
-        messagebox.showerror("오류", "올바른 HH:mm:ss 형식으로 입력해주세요.")
+        messagebox.showerror(t('message.title.error'), t('ui.notebook.settings.crawling_options.crawl_interval.message.error'))
 
 
 def undo_crawl_interval_button_handler():
@@ -274,7 +275,7 @@ def stray_checkbox_click_handler():
 
 
 def crawl_now_handler():
-    if messagebox.askyesno("확인", "지금 긁어오시겠습니까?"):
+    if messagebox.askyesno(t('message.title.confirm'), t('ui.notebook.settings.crawling_options.recent_crawl.message.crawl_now')):
         request_crawl()
         set_recent_crawl(datetime.now())
 
@@ -282,14 +283,14 @@ def crawl_now_handler():
 def reset_history_handler():
     from lib.ui.main_frame import reload_current_history_listbox
     
-    if messagebox.askyesno("확인", "기록을 초기화하시겠습니까?"):
+    if messagebox.askyesno(t('message.title.confirm'), t('ui.notebook.settings.crawling_options.reset_options.message.reset_history')):
         delete_all_histories(Database().get_connection())
 
         reload_current_history_listbox()
-        messagebox.showinfo("정보", "기록이 초기화되었습니다.")
+        messagebox.showinfo(t('message.title.info'), t('ui.notebook.settings.crawling_options.reset_options.message.reset_history_success'))
 
 
 def reset_log_handler():
-    if messagebox.askyesno("확인", "실행 로그를 초기화하시겠습니까?"):
+    if messagebox.askyesno(t('message.title.confirm'), t('ui.notebook.settings.crawling_options.reset_options.message.reset_log')):
         delete_all_logs(Database().get_connection())
-        messagebox.showinfo("정보", "실행 로그가 초기화되었습니다.")
+        messagebox.showinfo(t('message.title.info'), t('ui.notebook.settings.crawling_options.reset_options.message.reset_log_success'))

@@ -1,7 +1,7 @@
 import json
 from datetime import datetime, time
 from lib.constants import SOURCES_FILE
-from lib.enums import SettingKey
+from lib.enums import SettingKey, Language
 from tkinter import messagebox
 
 settings: dict[str, str | bool | datetime | time] | None = None
@@ -18,6 +18,8 @@ def initialize():
 
 
 def load_sources():
+    from lib.i18n import t
+    
     global sources
 
     sources = dict()
@@ -28,9 +30,9 @@ def load_sources():
             json_dict = json.load(f)
 
             if "source" not in json_dict:
-                raise AttributeError("'source' 속성이 없습니다.")
+                raise AttributeError(f"'source' {t('message.common.attribute_not_found')}")
             if not isinstance(json_dict["source"], list):
-                raise AttributeError("'source' 속성은 리스트여야 합니다.")
+                raise AttributeError(f"'source' {t('message.common.attribute_not_list')}")
 
             raw_source: list[dict] = json_dict["source"]
 
@@ -39,16 +41,16 @@ def load_sources():
                 if "name" not in source:
                     source["name"] = None
                 if "url" not in source:
-                    raise AttributeError("'url' 속성이 없습니다.")
+                    raise AttributeError(f"'url' {t('message.common.attribute_not_found')}")
                 
                 if "selector" not in source:
-                    raise AttributeError("'source[].selector' 속성이 없습니다.")
+                    raise AttributeError(f"'source[].selector' {t('message.common.attribute_not_found')}")
                 if "parent" not in source["selector"]:
-                    raise AttributeError("'source[].selector.parent' 속성이 없습니다.")
+                    raise AttributeError(f"'source[].selector.parent' {t('message.common.attribute_not_found')}")
                 if "child" not in source["selector"]:
-                    raise AttributeError("'source[].selector.child' 속성이 없습니다.")
+                    raise AttributeError(f"'source[].selector.child' {t('message.common.attribute_not_found')}")
                 if "crawl_content" not in source["selector"]:
-                    raise AttributeError("'source[].selector.crawl_content' 속성이 없습니다.")
+                    raise AttributeError(f"'source[].selector.crawl_content' {t('message.common.attribute_not_found')}")
                 if "crawl_link" not in source["selector"]:
                     source["selector"]["crawl_link"] = None
 
@@ -66,16 +68,16 @@ def load_sources():
                 sources[source["url"]] = source
                 
     except FileNotFoundError:
-        messagebox.showerror("오류", f"{SOURCES_FILE} 파일을 찾을 수 없습니다.\n파일을 생성합니다.")
+        messagebox.showerror(t("message.title.error"), f"{SOURCES_FILE} {t('message.common.file_not_found_create')}")
         
         with open(SOURCES_FILE, "w", encoding="utf-8") as f:
             json.dump({"source": []}, f)
 
     except json.JSONDecodeError:
-        messagebox.showerror("오류", f"{SOURCES_FILE} 파일을 읽는 중 오류가 발생했습니다.")
+        messagebox.showerror(t("message.title.error"), f"{SOURCES_FILE} {t('message.common.json_parse_error')}")
 
     except AttributeError as e:
-        messagebox.showerror("오류", f"{SOURCES_FILE} 파일의 형식이 잘못되었습니다.\n{e}")
+        messagebox.showerror(t("message.title.error"), f"{SOURCES_FILE} {t('message.common.file_format_error')}\n{e}")
     
 
 def load_settings() -> None:
@@ -86,13 +88,13 @@ def load_settings() -> None:
     settings = get_all_settings(Database().get_connection())
 
 
-def get_settings() -> dict[SettingKey, str | bool | datetime | time]:
+def get_settings() -> dict[SettingKey, str | bool | datetime | time | Language]:
     global settings
 
     return settings
 
 
-def set_setting(key: SettingKey, value: str | bool | datetime | time) -> None:
+def set_setting(key: SettingKey, value: str | bool | datetime | time | Language) -> None:
     from lib.db import Database, set_setting as set_setting_db
 
     set_setting_db(Database().get_connection(), key, value)

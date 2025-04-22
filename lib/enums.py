@@ -7,3 +7,9 @@ class SettingKey(Enum):
     STRAY = "stray"
     INTERVAL = "interval"
     RECENT_CRAWL = "recent_crawl"
+    LANGUAGE = "language"
+
+
+class Language(Enum):
+    ENGLISH = "en"
+    KOREAN = "ko"

@@ -4,6 +4,7 @@ from lib.utils import datetime_to_timestamp
 from lib.db import Database, get_histories
 from lib.constants import HISTORY_LOAD_LIMIT
 from lib.settings import get_sources, load_sources
+from lib.i18n import t
 
 history_offset: int = 0
 
@@ -16,13 +17,13 @@ def main_frame(master: ttk.Notebook):
     global history_listbox
 
     main_frame = Frame(master)
-    master.add(main_frame, text='기록')
+    master.add(main_frame, text=t('ui.notebook.main.title'))
 
 
     url_frame = Frame(main_frame)
     url_frame.pack(fill=X)
 
-    url_label = Label(url_frame, text="URL", anchor='w')
+    url_label = Label(url_frame, text=t('ui.notebook.main.url_listbox_title'), anchor='w')
     url_label.pack(fill=X, padx=3)
 
     url_listbox_scrollbar = ttk.Scrollbar(url_frame)
@@ -39,7 +40,7 @@ def main_frame(master: ttk.Notebook):
     history_frame = Frame(main_frame)
     history_frame.pack(fill=BOTH, expand=True)
 
-    history_label = Label(history_frame, text="기록", anchor='w')
+    history_label = Label(history_frame, text=t('ui.notebook.main.history_listbox_title'), anchor='w')
     history_label.pack(fill=X, padx=3)
 
     history_listbox_scrollbar = ttk.Scrollbar(history_frame)
@@ -56,7 +57,7 @@ def load_source(reload: bool = False) -> None:
 
     if reload:
         load_sources()
-        messagebox.showinfo("정보", "소스 파일을 다시 로드하였습니다.")
+        messagebox.showinfo(t("message.title.info"), t('ui.notebook.main.message.reload_source'))
     sources = get_sources()
 
     url_listbox.delete(0, END)
@@ -96,7 +97,7 @@ def load_history_listbox(url: str):
     sources = get_sources()
 
     if sources[selected_url]["options"]["disable_history"]:
-        history_listbox.insert(END, "이 URL은 기록을 저장하지 않습니다.")
+        history_listbox.insert(END, t('ui.notebook.main.message.ignore_history'))
         return
 
     histories = get_histories(Database().get_connection(), selected_url, HISTORY_LOAD_LIMIT, history_offset)

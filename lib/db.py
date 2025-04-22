@@ -1,7 +1,7 @@
 import sqlite3
 from sqlite3 import Connection
 from datetime import datetime, time
-from lib.enums import SettingKey
+from lib.enums import SettingKey, Language
 from lib.constants import DATABASE_URL
 from lib.utils import str_to_bool, timestamp_to_datetime
 from threading import Lock
@@ -42,7 +42,8 @@ class Database:
             (SettingKey.ICONIFY_ONCLOSE.value, 'True'),
             (SettingKey.STRAY.value, 'True'),
             (SettingKey.INTERVAL.value, '12:00:00'),
-            (SettingKey.RECENT_CRAWL.value, '2023-10-01 00:00:00')
+            (SettingKey.RECENT_CRAWL.value, '2023-10-01 00:00:00'),
+            (SettingKey.LANGUAGE.value, Language.KOREAN.value)
         ])
 
         cursor.execute('''
@@ -92,14 +93,22 @@ def get_all_settings(conn: Connection) -> dict[str, str | bool | datetime | time
             result[row[1]] = datetime.strptime(row[2], "%H:%M:%S").time()
         elif row[1] == SettingKey.RECENT_CRAWL.value:
             result[row[1]] = datetime.strptime(row[2], "%Y-%m-%d %H:%M:%S")
+        elif row[1] == SettingKey.LANGUAGE.value:
+            result[row[1]] = Language(row[2])
         else:
             result[row[1]] = row[2]
 
     return result
 
 
-def set_setting(conn: Connection, key: SettingKey, value: str) -> None:
+def set_setting(conn: Connection, key: SettingKey, value: str | bool | Language) -> None:
     cursor = conn.cursor()
+
+    if isinstance(value, bool):
+        value = str(value)
+    elif isinstance(value, Language):
+        value = value.value
+        
     cursor.execute(f"INSERT OR REPLACE INTO settings (key, value) VALUES ('{key.value}', '{value}')")
     conn.commit()
 

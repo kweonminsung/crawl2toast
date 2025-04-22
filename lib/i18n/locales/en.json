@@ -1,0 +1,104 @@
+{
+    "en": {
+        "message": {
+            "title": {
+                "error": "Error",
+                "info": "Info",
+                "confirm": "Confirm"
+            },
+            "common": {
+                "update_later": "Will be updated later.",
+                "attribute_not_found": "Attribute not found.",
+                "attribute_not_list": "Attribute must be a list.",
+                "file_not_found_create": "File not found.\nCreating the file.",
+                "json_parse_error": "Invalid JSON format.",
+                "file_format_error": "File format is incorrect."
+            }
+        },
+        "ui": {
+            "menubar": {
+                "menu1": {
+                    "file": "File",
+                    "help": "Help",
+                    "check_for_updates": "Check for Updates",
+                    "exit": "Exit"
+                },
+                "menu2": {
+                    "load": "Load",
+                    "reload_source": "Reload Source File"
+                },
+                "menu3": {
+                    "crawling": "Crawling",
+                    "crawl_now": "Crawl Now"
+                }
+            },
+            "notebook": {
+                "main": {
+                    "title": "History",
+                    "url_listbox_title": "URL",
+                    "history_listbox_title": "History",
+                    "message": {
+                        "reload_source": "The source file has been reloaded.",
+                        "ignore_history": "This URL does not save history."
+                    }
+                },
+                "settings": {
+                    "title": "Settings",
+                    "crawling_options": {
+                        "title": "Crawling Options",
+                        "recent_crawl": {
+                            "title": "Last Crawling Time",
+                            "loading": "Loading",
+                            "crawl_now": "Crawl Now",
+                            "message": {
+                                "crawl_now": "Do you want to crawl now?"
+                            }
+                        },
+                        "crawl_interval": {
+                            "title": "Set Crawling Interval (Enter in HH:mm:ss format)",
+                            "apply_interval": "Apply",
+                            "undo_interval": "Undo",
+                            "message": {
+                                "applied": "Applied successfully.",
+                                "error": "Please enter in valid HH:mm:ss format."
+                            }
+                        },
+                        "crawling_status": {
+                            "title": "Crawling Status",
+                            "loading": "Loading",
+                            "run": "Run",
+                            "stop": "Stop",
+                            "running": "Running",
+                            "stopped": "Stopped"
+                        },
+                        "system_options": {
+                            "title": "System Options",
+                            "start_onboot": "Run on Windows Startup",
+                            "iconify_onclose": "Minimize on Close",
+                            "stray": "Show Icon in Taskbar"
+                        },
+                        "reset_options": {
+                            "title": "Reset",
+                            "reset_history": "Reset History",
+                            "reset_log": "Reset Logs",
+                            "message": {
+                                "reset_history": "Do you want to reset the history?",
+                                "reset_history_success": "History has been reset.",
+                                "reset_log": "Do you want to reset the execution logs?",
+                                "reset_log_success": "Execution logs have been reset."
+                            }
+                        }
+                    }
+                },
+                "logs": {
+                    "title": "Execution Logs"
+                }
+            }
+        },
+        "stray": {
+            "crawl_now": "Crawl Now",
+            "deiconify": "Open Settings",
+            "exit": "Exit"
+        }
+    }
+}

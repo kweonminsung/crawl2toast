@@ -6,6 +6,7 @@ from lib.ui.settings_frame import settings_frame, crawl_now_handler
 from lib.ui.logs_frame import logs_frame
 from lib.utils import get_path
 from lib.constants import APP_NAME, CHECK_UPDATE_URL
+from lib.i18n import t
 
 
 root: Tk | None = None
@@ -43,18 +44,18 @@ def initialize():
     menubar = Menu(root)
 
     menu1 = Menu(menubar, tearoff=0)
-    menu1.add_command(label='도움말', command=lambda: messagebox.showinfo("도움말", "추후 업데이트 예정입니다."))
-    menu1.add_command(label='업데이트 확인', command=lambda: webbrowser.open(CHECK_UPDATE_URL))
-    menu1.add_command(label='종료', command=root.quit)
-    menubar.add_cascade(label='파일', menu=menu1)
+    menu1.add_command(label=t('ui.menubar.menu1.help'), command=lambda: messagebox.showinfo(t('message.title.info'), t('message.common.update_later')))
+    menu1.add_command(label=t('ui.menubar.menu1.check_for_updates'), command=lambda: webbrowser.open(CHECK_UPDATE_URL))
+    menu1.add_command(label=t('ui.menubar.menu1.exit'), command=root.quit)
+    menubar.add_cascade(label=t('ui.menubar.menu1.file'), menu=menu1)
 
     menu2 = Menu(menubar, tearoff=0)
-    menu2.add_command(label='소스파일 다시 로드', command=lambda: load_source(True))
-    menubar.add_cascade(label='로드', menu=menu2)
+    menu2.add_command(label=t('ui.menubar.menu2.reload_source'), command=lambda: load_source(True))
+    menubar.add_cascade(label=t('ui.menubar.menu2.load'), menu=menu2)
 
     menu3 = Menu(menubar, tearoff=0)
-    menu3.add_command(label='지금 긁어오기', command=crawl_now_handler)
-    menubar.add_cascade(label='크롤링', menu=menu3)
+    menu3.add_command(label=t('ui.menubar.menu3.crawl_now'), command=crawl_now_handler)
+    menubar.add_cascade(label=t('ui.menubar.menu3.crawling'), menu=menu3)
 
     root.config(menu=menubar)
 

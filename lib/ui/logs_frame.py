@@ -3,6 +3,7 @@ from tkinter import ttk
 from lib import utils
 from lib.db import Database, get_logs
 from lib.constants import LOG_LOAD_LIMIT
+from lib.i18n import t
 
 log_offset: int = 0
 
@@ -12,7 +13,7 @@ def logs_frame(master: ttk.Notebook):
     global log_listbox
 
     logs_frame = Frame(master)
-    master.add(logs_frame, text='실행 로그')
+    master.add(logs_frame, text=t('ui.notebook.logs.title'))
 
     log_listbox_scrollbar = ttk.Scrollbar(logs_frame)
     log_listbox_scrollbar.pack(side=RIGHT, fill=Y)

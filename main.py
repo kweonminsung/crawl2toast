@@ -1,4 +1,4 @@
-from lib import ui, settings, stray, crawler, scheduler
+from lib import ui, settings, stray, crawler, scheduler, i18n
 from lib.db import Database
 
 def main():
@@ -6,6 +6,8 @@ def main():
     Database()
 
     settings.initialize()
+
+    i18n.initialize()
 
     scheduler.initialize()
 
