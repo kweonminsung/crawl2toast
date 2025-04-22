@@ -1,13 +1,13 @@
 import i18n
-import os
 from lib.enums import Language, SettingKey
 from lib.settings import get_settings, set_setting
+from lib.utils import get_path
 
 def initialize():
     settings = get_settings()
     lang = settings[SettingKey.LANGUAGE]
 
-    i18n.load_path.append(os.path.join(os.path.dirname(__file__), "locales"))
+    i18n.load_path.append(get_path("locales"))
 
     i18n.set('file_format', 'json')
     i18n.set('filename_format', '{locale}.{format}')

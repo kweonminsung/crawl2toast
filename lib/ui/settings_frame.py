@@ -7,7 +7,7 @@ from lib.db import Database, delete_all_histories, delete_all_logs
 from lib.settings import get_settings, set_setting
 from lib.crawler import request_crawl
 from lib.scheduler import cancel_all_jobs, register_job
-from lib.utils import time_to_int, restart
+from lib.utils import time_to_int
 from lib.i18n import t
 import winreg
 import os
@@ -300,6 +300,7 @@ def crawl_now_handler():
 
 def set_language_handler(event):
     from lib.i18n import set_language
+    from lib.ui import refresh
     
     global language_combobox
 
@@ -314,7 +315,8 @@ def set_language_handler(event):
         set_language(Language.from_native(selected_language))
 
         if messagebox.askyesno(t('message.title.info'), t('ui.notebook.settings.system_options.language.message.restart')):
-            restart()
+            refresh()
+            
     else:
         language_combobox.current([lang.to_native() for lang in Language].index(settings[SettingKey.LANGUAGE].to_native()))
 

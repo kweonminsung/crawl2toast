@@ -10,6 +10,7 @@ if "%1"=="release" (
         --noconfirm ^
         --icon "public/icon.ico" ^
         --add-data "public/*;public" ^
+        --add-data "locales/*;locales" ^
         --add-binary "lib/crawler/chromedriver.exe;." ^
         --noconsole ^
         --optimize 2 ^
@@ -22,6 +23,7 @@ if "%1"=="release" (
         --noconfirm ^
         --icon "public/icon.ico" ^
         --add-data "public/*;public" ^
+        --add-data "locales/*;locales" ^
         --add-binary "lib/crawler/chromedriver.exe;." ^
         main.py
 )

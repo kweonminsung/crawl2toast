@@ -26,11 +26,3 @@ def get_path(path: str, bundle_path: str | None = None) -> str:
         return os.path.join(sys._MEIPASS, bundle_path)
     else:
         return path
-    
-
-
-def restart():
-    import os
-    import sys
-    
-    os.execl(sys.executable, *sys.orig_argv)

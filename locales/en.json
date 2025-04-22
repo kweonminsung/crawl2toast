@@ -81,7 +81,7 @@
                             "title": "Language",
                             "message": {
                                 "apply": "Do you want to change the language?",
-                                "restart": "Changes will be applied after restarting the program.\nDo you want to restart now?"
+                                "restart": "To fully apply the changes, the program needs to be restarted."
                             }
                         }
                     },
