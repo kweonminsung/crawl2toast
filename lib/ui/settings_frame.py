@@ -230,6 +230,8 @@ def undo_crawl_interval_button_handler():
 
 
 def set_start_onboot(enable: bool):
+    set_setting(SettingKey.START_ONBOOT, enable)
+
     key = winreg.OpenKey(
         winreg.HKEY_CURRENT_USER,
         r"Software\Microsoft\Windows\CurrentVersion\Run",
@@ -243,15 +245,6 @@ def set_start_onboot(enable: bool):
         except FileNotFoundError:
             pass
     winreg.CloseKey(key)
-
-
-def set_start_onboot(start_onboot: bool):
-    set_setting(SettingKey.START_ONBOOT, start_onboot)
-
-    if start_onboot:
-        set_start_onboot(True)
-    else:
-        set_start_onboot(False)
 
 
 def iconify_onclose_checkbox_click_handler():
