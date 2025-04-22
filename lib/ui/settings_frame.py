@@ -197,7 +197,7 @@ def apply_crawl_interval_button_handler():
         
         set_setting(SettingKey.INTERVAL, interval)
 
-        messagebox.showinfo("크롤링 주기 설정", f"크롤링 주기가 {interval}로 설정되었습니다.")
+        messagebox.showinfo("정보", f"크롤링 주기가 {interval}로 설정되었습니다.")
     except ValueError:
         messagebox.showerror("오류", "올바른 HH:mm:ss 형식으로 입력해주세요.")
 
@@ -286,10 +286,10 @@ def reset_history_handler():
         delete_all_histories(Database().get_connection())
 
         reload_current_history_listbox()
-        messagebox.showinfo("기록 초기화", "기록이 초기화되었습니다.")
+        messagebox.showinfo("정보", "기록이 초기화되었습니다.")
 
 
 def reset_log_handler():
     if messagebox.askyesno("확인", "실행 로그를 초기화하시겠습니까?"):
         delete_all_logs(Database().get_connection())
-        messagebox.showinfo("실행 로그 초기화", "실행 로그가 초기화되었습니다.")
+        messagebox.showinfo("정보", "실행 로그가 초기화되었습니다.")

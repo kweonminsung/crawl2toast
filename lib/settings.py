@@ -3,7 +3,6 @@ from datetime import datetime, time
 from lib.constants import SOURCES_FILE
 from lib.enums import SettingKey
 from tkinter import messagebox
-import os
 
 settings: dict[str, str | bool | datetime | time] | None = None
 sources: dict | None = None
@@ -20,13 +19,21 @@ def initialize():
 
 def load_sources():
     global sources
+
+    sources = dict()
     
     # Load sources from JSON file
     try:
         with open(SOURCES_FILE, encoding="utf-8") as f:
-            raw_source: list[dict] = json.load(f)["source"]
+            json_dict = json.load(f)
 
-            sources = dict()
+            if "source" not in json_dict:
+                raise AttributeError("'source' 속성이 없습니다.")
+            if not isinstance(json_dict["source"], list):
+                raise AttributeError("'source' 속성은 리스트여야 합니다.")
+
+            raw_source: list[dict] = json_dict["source"]
+
             for source in raw_source:
 
                 if "name" not in source:
@@ -35,13 +42,13 @@ def load_sources():
                     raise AttributeError("'url' 속성이 없습니다.")
                 
                 if "selector" not in source:
-                    raise AttributeError("'selector' 속성이 없습니다.")
+                    raise AttributeError("'source[].selector' 속성이 없습니다.")
                 if "parent" not in source["selector"]:
-                    raise AttributeError("'selector.parent' 속성이 없습니다.")
+                    raise AttributeError("'source[].selector.parent' 속성이 없습니다.")
                 if "child" not in source["selector"]:
-                    raise AttributeError("'selector.child' 속성이 없습니다.")
+                    raise AttributeError("'source[].selector.child' 속성이 없습니다.")
                 if "crawl_content" not in source["selector"]:
-                    raise AttributeError("'selector.crawl_content' 속성이 없습니다.")
+                    raise AttributeError("'source[].selector.crawl_content' 속성이 없습니다.")
                 if "crawl_link" not in source["selector"]:
                     source["selector"]["crawl_link"] = None
 

@@ -1,5 +1,5 @@
 from tkinter import *
-from tkinter import ttk
+from tkinter import ttk, messagebox
 from lib.utils import datetime_to_timestamp
 from lib.db import Database, get_histories
 from lib.constants import HISTORY_LOAD_LIMIT
@@ -56,6 +56,7 @@ def load_source(reload: bool = False) -> None:
 
     if reload:
         load_sources()
+        messagebox.showinfo("정보", "소스 파일을 다시 로드하였습니다.")
     sources = get_sources()
 
     url_listbox.delete(0, END)
