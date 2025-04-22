@@ -51,11 +51,11 @@ def main_frame(master: ttk.Notebook):
 
     load_source()
 
-
-def load_source():
+def load_source(reload: bool = False) -> None:
     global url_listbox
-    
-    load_sources()
+
+    if reload:
+        load_sources()
     sources = get_sources()
 
     url_listbox.delete(0, END)
@@ -63,8 +63,9 @@ def load_source():
     for _url, _source in sources.items():
         url_listbox.insert(END, _url)
 
+    reload_current_history_listbox()
     # url_listbox.insert(0, "https://example.com")
-
+    
 
 def url_listbox_click_handler(event):
     global selected_url

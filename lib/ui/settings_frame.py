@@ -258,7 +258,6 @@ def iconify_onclose_checkbox_click_handler():
         stray_checkbox.config(state="disabled")
 
 
-
 def stray_checkbox_click_handler():
     from lib.stray import start_stray, stop_stray
     
@@ -281,10 +280,11 @@ def crawl_now_handler():
 
 
 def reset_history_handler():
+    from lib.ui.main_frame import reload_current_history_listbox
+    
     if messagebox.askyesno("확인", "기록을 초기화하시겠습니까?"):
         delete_all_histories(Database().get_connection())
 
-        from lib.ui.main_frame import reload_current_history_listbox
         reload_current_history_listbox()
         messagebox.showinfo("기록 초기화", "기록이 초기화되었습니다.")
 

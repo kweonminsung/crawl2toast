@@ -2,7 +2,7 @@
     // 긁어올 사이트의 소스
     "source": [
         {
-            // 구분을 위한 이름
+            // (선택) 구분을 위한 이름
             "name": "성균관대학교 소프트웨어학과 공지사항",
             // 긁어올 URL
             "url": "https://cse.skku.edu/cse/notice.do?mode=list&&articleLimit=10&article.offset=10",

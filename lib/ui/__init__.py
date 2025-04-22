@@ -49,7 +49,7 @@ def initialize():
     menubar.add_cascade(label='파일', menu=menu1)
 
     menu2 = Menu(menubar, tearoff=0)
-    menu2.add_command(label='소스파일 다시 로드', command=load_source)
+    menu2.add_command(label='소스파일 다시 로드', command=lambda: load_source(True))
     menubar.add_cascade(label='로드', menu=menu2)
 
     menu3 = Menu(menubar, tearoff=0)

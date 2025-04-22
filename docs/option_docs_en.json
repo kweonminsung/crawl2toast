@@ -2,7 +2,7 @@
     // Source of the website to crawl
     "source": [
         {
-            // Name for identification
+            // (Optional) Name for identification
             "name": "Sungkyunkwan University Software Department Notices",
             // URL to crawl
             "url": "https://cse.skku.edu/cse/notice.do?mode=list&&articleLimit=10&article.offset=10",
