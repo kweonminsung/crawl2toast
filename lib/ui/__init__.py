@@ -28,6 +28,13 @@ def deiconify():
     root.focus_force()
 
 
+# def refresh():
+#     global root
+
+#     root.destroy()
+#     initialize()
+
+
 def initialize():
     global root
 

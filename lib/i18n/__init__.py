@@ -5,7 +5,7 @@ from lib.settings import get_settings, set_setting
 
 def initialize():
     settings = get_settings()
-    lang = settings[SettingKey.LANGUAGE.value]
+    lang = settings[SettingKey.LANGUAGE]
 
     i18n.load_path.append(os.path.join(os.path.dirname(__file__), "locales"))
 

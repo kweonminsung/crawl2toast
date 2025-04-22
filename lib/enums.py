@@ -13,3 +13,18 @@ class SettingKey(Enum):
 class Language(Enum):
     ENGLISH = "en"
     KOREAN = "ko"
+
+    def to_native(self) -> str:
+        if self == Language.ENGLISH:
+            return 'English'
+        elif self == Language.KOREAN:
+            return '한국어'
+        else:
+            return '한국어'
+    
+    @staticmethod
+    def from_native(native: str) -> 'Language':
+        if native == 'English':
+            return Language.ENGLISH
+        elif native == '한국어':
+            return Language.KOREAN

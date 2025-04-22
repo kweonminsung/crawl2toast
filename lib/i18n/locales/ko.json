@@ -70,23 +70,30 @@
                             "stop": "중지",
                             "running": "실행 중",
                             "stopped": "중지됨"
-                        },
-                        "system_options": {
-                            "title": "시스템 옵션",
-                            "start_onboot": "윈도우 시작 시 실행",
-                            "iconify_onclose": "X 버튼 클릭 시 창 최소화",
-                            "stray": "작업 표시줄에 아이콘 표시"
-                        },
-                        "reset_options": {
-                            "title": "초기화",
-                            "reset_history": "기록 초기화",
-                            "reset_log": "실행 로그 초기화",
+                        }
+                    },
+                    "system_options": {
+                        "title": "시스템 옵션",
+                        "start_onboot": "윈도우 시작 시 실행",
+                        "iconify_onclose": "X 버튼 클릭 시 창 최소화",
+                        "stray": "작업 표시줄에 아이콘 표시",
+                        "language": {
+                            "title": "언어 설정",
                             "message": {
-                                "reset_history": "기록을 초기화하시겠습니까?",
-                                "reset_history_success": "기록이 초기화되었습니다.",
-                                "reset_log": "실행 로그를 초기화하시겠습니까?",
-                                "reset_log_success": "실행 로그가 초기화되었습니다."
+                                "apply": "언어를 변경하시겠습니까?",
+                                "restart": "변경을 적용하기 위해서는 프로그램을 재시작해야 합니다.\n지금 재시작하시겠습니까?"
                             }
+                        }
+                    },
+                    "reset_options": {
+                        "title": "초기화",
+                        "reset_history": "기록 초기화",
+                        "reset_log": "실행 로그 초기화",
+                        "message": {
+                            "reset_history": "기록을 초기화하시겠습니까?",
+                            "reset_history_success": "기록이 초기화되었습니다.",
+                            "reset_log": "실행 로그를 초기화하시겠습니까?",
+                            "reset_log_success": "실행 로그가 초기화되었습니다."
                         }
                     }
                 },

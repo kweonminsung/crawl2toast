@@ -74,7 +74,7 @@ class Database:
             self.conn = None
 
 
-def get_all_settings(conn: Connection) -> dict[str, str | bool | datetime | time]:
+def get_all_settings(conn: Connection) -> dict[SettingKey, str | bool | datetime | time]:
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM settings")
     rows = cursor.fetchall()
@@ -82,21 +82,19 @@ def get_all_settings(conn: Connection) -> dict[str, str | bool | datetime | time
     result = dict()
     for row in rows:
         if row[1] == SettingKey.RECENT_STATUS.value:
-            result[row[1]] = str_to_bool(row[2])
+            result[SettingKey.RECENT_STATUS] = str_to_bool(row[2])
         elif row[1] == SettingKey.START_ONBOOT.value:
-            result[row[1]] = str_to_bool(row[2])
+            result[SettingKey.START_ONBOOT] = str_to_bool(row[2])
         elif row[1] == SettingKey.ICONIFY_ONCLOSE.value:
-            result[row[1]] = str_to_bool(row[2])
+            result[SettingKey.ICONIFY_ONCLOSE] = str_to_bool(row[2])
         elif row[1] == SettingKey.STRAY.value:
-            result[row[1]] = str_to_bool(row[2])
+            result[SettingKey.STRAY] = str_to_bool(row[2])
         elif row[1] == SettingKey.INTERVAL.value:
-            result[row[1]] = datetime.strptime(row[2], "%H:%M:%S").time()
+            result[SettingKey.INTERVAL] = datetime.strptime(row[2], "%H:%M:%S").time()
         elif row[1] == SettingKey.RECENT_CRAWL.value:
-            result[row[1]] = datetime.strptime(row[2], "%Y-%m-%d %H:%M:%S")
+            result[SettingKey.RECENT_CRAWL] = datetime.strptime(row[2], "%Y-%m-%d %H:%M:%S")
         elif row[1] == SettingKey.LANGUAGE.value:
-            result[row[1]] = Language(row[2])
-        else:
-            result[row[1]] = row[2]
+            result[SettingKey.LANGUAGE] = Language(row[2])
 
     return result
 

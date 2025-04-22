@@ -70,23 +70,30 @@
                             "stop": "Stop",
                             "running": "Running",
                             "stopped": "Stopped"
-                        },
-                        "system_options": {
-                            "title": "System Options",
-                            "start_onboot": "Run on Windows Startup",
-                            "iconify_onclose": "Minimize on Close",
-                            "stray": "Show Icon in Taskbar"
-                        },
-                        "reset_options": {
-                            "title": "Reset",
-                            "reset_history": "Reset History",
-                            "reset_log": "Reset Logs",
+                        }
+                    },
+                    "system_options": {
+                        "title": "System Options",
+                        "start_onboot": "Run on Windows Startup",
+                        "iconify_onclose": "Minimize on Close",
+                        "stray": "Show Icon in Taskbar",
+                        "language": {
+                            "title": "Language",
                             "message": {
-                                "reset_history": "Do you want to reset the history?",
-                                "reset_history_success": "History has been reset.",
-                                "reset_log": "Do you want to reset the execution logs?",
-                                "reset_log_success": "Execution logs have been reset."
+                                "apply": "Do you want to change the language?",
+                                "restart": "Changes will be applied after restarting the program.\nDo you want to restart now?"
                             }
+                        }
+                    },
+                    "reset_options": {
+                        "title": "Reset",
+                        "reset_history": "Reset History",
+                        "reset_log": "Reset Logs",
+                        "message": {
+                            "reset_history": "Do you want to reset the history?",
+                            "reset_history_success": "History has been reset.",
+                            "reset_log": "Do you want to reset the execution logs?",
+                            "reset_log_success": "Execution logs have been reset."
                         }
                     }
                 },
