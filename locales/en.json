@@ -98,7 +98,8 @@
                     }
                 },
                 "logs": {
-                    "title": "Execution Logs"
+                    "title": "Execution Logs",
+                    "log_detail": "Log Details"
                 }
             }
         },

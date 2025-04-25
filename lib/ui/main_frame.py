@@ -31,6 +31,8 @@ def main_frame(master: ttk.Notebook):
     url_listbox = Listbox(url_frame, height=5, yscrollcommand=url_listbox_scrollbar.set)
     url_listbox.pack(fill=X)
     url_listbox.bind('<<ListboxSelect>>', url_listbox_click_handler)
+    url_listbox.bind("<Double-1>", url_listbox_doubleClick_handler)
+
     
 
     sp1 = ttk.Separator(main_frame, orient='horizontal')
@@ -43,12 +45,16 @@ def main_frame(master: ttk.Notebook):
     history_label = Label(history_frame, text=t('ui.notebook.main.history_listbox_title'), anchor='w')
     history_label.pack(fill=X, padx=3)
 
-    history_listbox_scrollbar = ttk.Scrollbar(history_frame)
-    history_listbox_scrollbar.pack(side=RIGHT, fill=Y)
-    history_listbox_scrollbar.config(command=history_listbox_scrollbar_onscroll_handler)
-    history_listbox = Listbox(history_frame, yscrollcommand=history_listbox_scrollbar.set)
+    history_listbox_scrollbar_y = ttk.Scrollbar(history_frame)
+    history_listbox_scrollbar_y.pack(side=RIGHT, fill=Y)
+    history_listbox_scrollbar_y.config(command=history_listbox_scrollbar_y_onscroll_handler)
+
+    history_listbox_scrollbar_x = ttk.Scrollbar(history_frame, orient="horizontal")
+    history_listbox_scrollbar_x.pack(side=BOTTOM, fill=X)
+
+    history_listbox = Listbox(history_frame, yscrollcommand=history_listbox_scrollbar_y.set, xscrollcommand=history_listbox_scrollbar_x.set)
     history_listbox.bind("<MouseWheel>", history_listbox_onscroll_handler)
-    history_listbox.bind("<Double-1>", history_listbox_doubleclick_handler)
+    history_listbox.bind("<Double-1>", history_listbox_doubleClick_handler)
     history_listbox.pack(fill=BOTH, expand=True)
 
     load_source()
@@ -85,6 +91,17 @@ def url_listbox_click_handler(event):
         return
 
     load_history_listbox(new_selected_url)
+
+
+def url_listbox_doubleClick_handler(event):
+    import webbrowser
+    
+    global selected_url
+
+    if selected_url is None:
+        return
+    
+    webbrowser.open(selected_url)
 
 
 def load_history_listbox(url: str):
@@ -134,16 +151,16 @@ def history_listbox_load_more():
 
     history_offset += HISTORY_LOAD_LIMIT
 
-    for i in range(len(append_histories)):
-        item = f"{datetime_to_timestamp(append_histories['timestamp'])} - {append_histories['content']}"
+    for history in append_histories:
+        item = f"{datetime_to_timestamp(history['timestamp'])} - {history['content']}"
 
-        if append_histories["link"] is not None:
-            item += f"\n{append_histories['link']}"
+        if history["link"] is not None:
+            item += f"\n{history['link']}"
 
         history_listbox.insert(END, item)
         
 
-def history_listbox_scrollbar_onscroll_handler(*args):
+def history_listbox_scrollbar_y_onscroll_handler(*args):
     global history_listbox
 
     history_listbox.yview(*args)
@@ -167,7 +184,7 @@ def history_listbox_onscroll_handler(event):
         history_listbox_load_more()
 
 
-def history_listbox_doubleclick_handler(event):
+def history_listbox_doubleClick_handler(event):
     import webbrowser
 
     global history_listbox
@@ -180,5 +197,5 @@ def history_listbox_doubleclick_handler(event):
     temp = selected_history.split("\n")
 
     link = temp[len(temp) - 1]
-    
+
     webbrowser.open(link)

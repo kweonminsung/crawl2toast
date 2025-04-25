@@ -72,7 +72,7 @@ def crawl():
                 if selector["crawl_link"] is not None:
                     try:
                         raw_link = str(child_element.select_one(selector["crawl_link"])["href"]).strip()
-                        
+
                         link = urljoin(_url, raw_link)
                     except Exception as e:
                         raise Exception(f"ElementNotFoundException: {selector['parent']} > {selector['child']} > {selector['crawl_link']}({_url})")
@@ -92,10 +92,11 @@ def crawl():
                 
                     create_history(Database().get_connection(), _url, result["content"], result["link"] if result["link"] else None)
 
-            if len(url_result) > 0:
-                show_compressed_toast(_source["name"], url_result[0]["content"], len(url_result) - 1)
-            else:
-                show_toast(_source["name"], url_result[0]["content"])
+            if not ["options"]["disable_toast"]:
+                if len(url_result) > 0:
+                    show_compressed_toast(_source["name"], url_result[0]["content"], len(url_result) - 1)
+                else:
+                    show_toast(_source["name"], url_result[0]["content"])
 
 
             

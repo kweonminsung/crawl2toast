@@ -42,7 +42,7 @@ def initialize():
     root.title(APP_NAME)
 
     root.iconbitmap(get_path("public/icon.ico"))
-    root.geometry('400x600')
+    root.geometry('500x600')
     root.attributes('-fullscreen', False)
     root.resizable(False, False)
 

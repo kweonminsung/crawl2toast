@@ -10,6 +10,7 @@
                 "crawl_link": "dl > dt > a"
             },
             "options": {
+                "disable_toast": false,
                 "disable_history": false,
                 "disable_last_history_check": false,
                 "render": false,

@@ -18,11 +18,13 @@
                 "crawl_link": "dl > dt > a"
             },
             // Additional options
+            // disable_toast: (Optional) If set to true, disables toast notifications (default: false)
             // disable_history: (Optional) If set to true, disables crawling history (default: false)
             // disable_last_history_check: (Optional) If set to true, crawls all items regardless of the last record (default: false)
             // render: (Optional) If set to true, renders HTML and JS before crawling (default: false)
             // render_(Optional) wait: Time to wait before crawling after rendering (unit: ms, default: 1000)
             "options": {
+                "disable_toast": false,
                 "disable_history": false,
                 "disable_last_history_check": false,
                 "render": false,

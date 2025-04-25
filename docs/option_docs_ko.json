@@ -18,11 +18,13 @@
                 "crawl_link": "dl > dt > a"
             },
             // 기타 옵션
+            // / disable_toast: (선택) true로 설정 시 toast 알림을 끔 (기본값: false)
             // disable_history: (선택) true로 설정 시 크롤링 기록을 끔 (기본값: false)
             // disable_last_history_check: (선택) true로 설정 시 마지막 기록과 관련 없이 모두 긁어옴 (기본값: false)
             // render: (선택) true로 설정 시 HTML 및 JS를 렌더링한 후에 긁어옴 (기본값: false)
             // render_wait: (선택) 렌더링 후 긁어오기 전 대기할 시간 (단위: ms, 기본값: 1000)
             "options": {
+                "disable_toast": false,
                 "disable_history": false,
                 "disable_last_history_check": false,
                 "render": false,

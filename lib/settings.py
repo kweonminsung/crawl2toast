@@ -56,6 +56,8 @@ def load_sources():
 
                 if "options" not in source:
                     source["options"] = dict()
+                if "disable_toast" not in source["options"]:
+                    source["options"]["disable_toast"] = False
                 if "disable_history" not in source["options"]:
                     source["options"]["disable_history"] = False
                 if "disable_last_history_check" not in source["options"]:

@@ -10,6 +10,7 @@
                 "crawl_link": "a"
             },
             "options": {
+                "disable_toast": false,
                 "disable_history": false,
                 "disable_last_history_check": true,
                 "render": false,

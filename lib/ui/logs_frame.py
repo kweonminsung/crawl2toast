@@ -1,5 +1,5 @@
 from tkinter import *
-from tkinter import ttk
+from tkinter import ttk, messagebox
 from lib import utils
 from lib.db import Database, get_logs
 from lib.constants import LOG_LOAD_LIMIT
@@ -15,11 +15,16 @@ def logs_frame(master: ttk.Notebook):
     logs_frame = Frame(master)
     master.add(logs_frame, text=t('ui.notebook.logs.title'))
 
-    log_listbox_scrollbar = ttk.Scrollbar(logs_frame)
-    log_listbox_scrollbar.pack(side=RIGHT, fill=Y)
-    log_listbox_scrollbar.config(command=log_listbox_scrollbar_onscroll_handler)
-    log_listbox = Listbox(logs_frame, yscrollcommand=log_listbox_scrollbar.set)
+    log_listbox_scrollbar_y = ttk.Scrollbar(logs_frame)
+    log_listbox_scrollbar_y.pack(side=RIGHT, fill=Y)
+    log_listbox_scrollbar_y.config(command=log_listbox_scrollbar_y_onscroll_handler)
+
+    log_listbox_scrollbar_x = ttk.Scrollbar(logs_frame, orient="horizontal")
+    log_listbox_scrollbar_x.pack(side=BOTTOM, fill=X)
+
+    log_listbox = Listbox(logs_frame, yscrollcommand=log_listbox_scrollbar_y.set, xscrollcommand=log_listbox_scrollbar_x.set)
     log_listbox.bind("<MouseWheel>", log_listbox_onscroll_handler)
+    log_listbox.bind("<Double-1>", log_listbox_doubleclick_handler)
     log_listbox.pack(fill=BOTH, expand=True)
 
     load_log_listbox()
@@ -55,7 +60,7 @@ def log_listbox_load_more():
         log_listbox.insert(END, f"{"✅" if append_logs[i]['ok'] else "❌"} {utils.datetime_to_timestamp(append_logs[i]['timestamp'])} - {append_logs[i]['message']}")
         
 
-def log_listbox_scrollbar_onscroll_handler(*args):
+def log_listbox_scrollbar_y_onscroll_handler(*args):
     global log_listbox
 
     log_listbox.yview(*args)
@@ -77,4 +82,15 @@ def log_listbox_onscroll_handler(event):
 
     if pos[1] > 0.95:
         log_listbox_load_more()
-    
+
+
+def log_listbox_doubleclick_handler(event):
+    global log_listbox
+
+    selected_index = log_listbox.curselection()
+    if not selected_index:
+        return
+
+    selected_log = log_listbox.get(selected_index[0])
+
+    messagebox.showinfo(t('ui.notebook.logs.log_detail'), selected_log)
