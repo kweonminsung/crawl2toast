@@ -3,7 +3,7 @@ from sqlite3 import Connection
 from datetime import datetime, time
 from lib.enums import SettingKey, Language
 from lib.constants import DATABASE_URL
-from lib.utils import str_to_bool, timestamp_to_datetime
+from lib.utils import str_to_bool, timestamp_to_datetime, get_path
 from threading import Lock
 
 class Database:
@@ -22,7 +22,7 @@ class Database:
     def _initialize(self):
         print("Database initialized successfully.")
         
-        self.conn = sqlite3.connect(DATABASE_URL, check_same_thread=False)
+        self.conn = sqlite3.connect(get_path(DATABASE_URL), check_same_thread=False)
         self._create_tables()
 
     def _create_tables(self):
