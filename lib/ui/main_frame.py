@@ -48,9 +48,11 @@ def main_frame(master: ttk.Notebook):
     history_listbox_scrollbar.config(command=history_listbox_scrollbar_onscroll_handler)
     history_listbox = Listbox(history_frame, yscrollcommand=history_listbox_scrollbar.set)
     history_listbox.bind("<MouseWheel>", history_listbox_onscroll_handler)
+    history_listbox.bind("<Double-1>", history_listbox_doubleclick_handler)
     history_listbox.pack(fill=BOTH, expand=True)
 
     load_source()
+
 
 def load_source(reload: bool = False) -> None:
     global url_listbox
@@ -103,8 +105,12 @@ def load_history_listbox(url: str):
     histories = get_histories(Database().get_connection(), selected_url, HISTORY_LOAD_LIMIT, history_offset)
 
     for history in histories:
-        # history_listbox.insert(END, history)
-        history_listbox.insert(END, f"{datetime_to_timestamp(history['timestamp'])} - {history['content']}")
+        item = f"{datetime_to_timestamp(history['timestamp'])} - {history['content']}"
+
+        if history["link"] is not None:
+            item += f"\n{history['link']}"
+
+        history_listbox.insert(END, item)
 
 
 def reload_current_history_listbox():
@@ -129,8 +135,12 @@ def history_listbox_load_more():
     history_offset += HISTORY_LOAD_LIMIT
 
     for i in range(len(append_histories)):
-        # history_listbox.insert(END, append_histories[i])
-        history_listbox.insert(END, f"{datetime_to_timestamp(append_histories[i]['timestamp'])} - {append_histories[i]['content']}")
+        item = f"{datetime_to_timestamp(append_histories['timestamp'])} - {append_histories['content']}"
+
+        if append_histories["link"] is not None:
+            item += f"\n{append_histories['link']}"
+
+        history_listbox.insert(END, item)
         
 
 def history_listbox_scrollbar_onscroll_handler(*args):
@@ -155,4 +165,20 @@ def history_listbox_onscroll_handler(event):
 
     if pos[1] > 0.95:
         history_listbox_load_more()
+
+
+def history_listbox_doubleclick_handler(event):
+    import webbrowser
+
+    global history_listbox
+
+    selected_index = history_listbox.curselection()
+    if not selected_index:
+        return
+
+    selected_history: str = history_listbox.get(selected_index[0])
+    temp = selected_history.split("\n")
+
+    link = temp[len(temp) - 1]
     
+    webbrowser.open(link)

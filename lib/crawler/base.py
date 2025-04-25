@@ -6,6 +6,7 @@ from lib.toaster import show_toast, show_compressed_toast
 from lib.constants import USER_AGENT
 from lib.settings import get_sources
 from datetime import datetime
+from urllib.parse import urljoin
 
 def get_html_by_selenium(url: str, wait: int) -> str:
     from lib.crawler import get_selenium_driver
@@ -70,7 +71,9 @@ def crawl():
                 link = None
                 if selector["crawl_link"] is not None:
                     try:
-                        link = str(child_element.select_one(selector["crawl_link"])["href"]).strip()
+                        raw_link = str(child_element.select_one(selector["crawl_link"])["href"]).strip()
+                        
+                        link = urljoin(_url, raw_link)
                     except Exception as e:
                         raise Exception(f"ElementNotFoundException: {selector['parent']} > {selector['child']} > {selector['crawl_link']}({_url})")
 
@@ -87,7 +90,7 @@ def crawl():
                     if _source["options"]["disable_last_history_check"] and len(last_history) > 0 and last_history[0]["content"] == result["content"]:
                         continue
                 
-                    create_history(Database().get_connection(), _url, result["content"])
+                    create_history(Database().get_connection(), _url, result["content"], result["link"] if result["link"] else None)
 
             if len(url_result) > 0:
                 show_compressed_toast(_source["name"], url_result[0]["content"], len(url_result) - 1)
