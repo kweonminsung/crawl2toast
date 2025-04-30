@@ -1,8 +1,12 @@
 # crawl2toast
 
-CSS 선택자를 이용해 웹에서 특정 정보를 주기적으로 수집하고, 실시간 윈도우 알림으로 알려주는 크롤링 도구(윈도우용)
+<img src="https://github.com/kweonminsung/crawl2toast/blob/main/public/icon.png" />
 
-| ~~테스트로 만든건데 하다보니 규모가 커짐~~
+Real-time toast notification of crawled data with CSS selectors(Windows Only)
+
+### Download
+
+You can download the executable file from the [release tab](https://github.com/kweonminsung/crawl2toast/releases).
 
 ### Prerequisites
 

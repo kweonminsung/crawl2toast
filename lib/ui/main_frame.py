@@ -33,7 +33,6 @@ def main_frame(master: ttk.Notebook):
     url_listbox.bind('<<ListboxSelect>>', url_listbox_click_handler)
     url_listbox.bind("<Double-1>", url_listbox_doubleClick_handler)
 
-    
 
     sp1 = ttk.Separator(main_frame, orient='horizontal')
     sp1.pack(fill=X)
