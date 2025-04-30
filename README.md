@@ -1,6 +1,6 @@
 # crawl2toast
 
-<img src="https://github.com/kweonminsung/crawl2toast/blob/main/public/icon.png" />
+<img width="128" height="128" src="https://github.com/kweonminsung/crawl2toast/blob/main/public/icon.png" />
 
 Real-time toast notification of crawled data with CSS selectors(Windows Only)
 
