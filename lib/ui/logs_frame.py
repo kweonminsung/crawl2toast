@@ -26,6 +26,7 @@ def logs_frame(master: ttk.Notebook):
     log_listbox.bind("<MouseWheel>", log_listbox_onscroll_handler)
     log_listbox.bind("<Double-1>", log_listbox_doubleclick_handler)
     log_listbox.pack(fill=BOTH, expand=True)
+    log_listbox_scrollbar_x.config(command=log_listbox.xview)
 
     load_log_listbox()
 
@@ -41,7 +42,16 @@ def load_log_listbox():
 
     for log in logs:
         # log_listbox.insert(END, log)
-        log_listbox.insert(END, f"{"✅" if log["ok"] else "❌"} {utils.datetime_to_timestamp(log['timestamp'])} - {log['message']}")
+        log_listbox.insert(END, f"""
+{"✅" if log["ok"] else "❌"} {log['message']}
+
+- Timestamp -
+{utils.datetime_to_timestamp(log['timestamp'])}
+
+- URL -
+{log['url']}
+""")
+        log_listbox.itemconfig(END, {'bg': '#F0F0F0' if log['ok'] else '#f8D7DA', 'fg': '#000000' if log['ok'] else '#721C24'})
 
 
 def log_listbox_load_more():
@@ -55,9 +65,19 @@ def log_listbox_load_more():
 
     log_offset += LOG_LOAD_LIMIT
 
-    for i in range(len(append_logs)):
-        # log_listbox.insert(END, append_logs[i])
-        log_listbox.insert(END, f"{"✅" if append_logs[i]['ok'] else "❌"} {utils.datetime_to_timestamp(append_logs[i]['timestamp'])} - {append_logs[i]['message']}")
+    for log in append_logs:
+        # log_listbox.insert(END, log[i])
+        log_listbox.insert(END, f"""
+{"✅" if log["ok"] else "❌"} {log['message']}
+
+- Timestamp -
+{utils.datetime_to_timestamp(log['timestamp'])}
+
+- URL -
+{log['url']}
+""")
+        log_listbox.itemconfig(END, {'bg': '#F0F0F0' if log['ok'] else '#f8D7DA', 'fg': '#000000' if log['ok'] else '#721C24'})
+
         
 
 def log_listbox_scrollbar_y_onscroll_handler(*args):

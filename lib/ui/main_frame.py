@@ -56,6 +56,7 @@ def main_frame(master: ttk.Notebook):
     history_listbox.bind("<MouseWheel>", history_listbox_onscroll_handler)
     history_listbox.bind("<Double-1>", history_listbox_doubleClick_handler)
     history_listbox.pack(fill=BOTH, expand=True)
+    history_listbox_scrollbar_x.config(command=history_listbox.xview)
 
     load_source()
 
