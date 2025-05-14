@@ -133,7 +133,12 @@ def load_history_listbox(url: str):
 def reload_current_history_listbox():
     global selected_url
 
+    sources = get_sources()
+
     if selected_url is None:
+        return
+    
+    if selected_url not in sources:
         return
 
     load_history_listbox(selected_url)
